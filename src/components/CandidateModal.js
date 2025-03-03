@@ -34,6 +34,16 @@ const CandidateModal = ({
   const [probeSize, setProbeSize] = useState(initialProbeSize)
   const [candidateSize, setCandidateSize] = useState(initialCandidateSize)
 
+  useEffect(() => {
+    if (visible) {
+      setProbePosition(initialProbePosition)
+      setCandidatePosition(initialCandidatePosition)
+      setProbeSize(initialProbeSize)
+      setCandidateSize(initialCandidateSize)
+      setActiveImage(null)
+    }
+  }, [visible])
+
   const imageStyle = {
     width: '100%',
     height: '100%', // Make the image fill the Rnd container
@@ -47,6 +57,10 @@ const CandidateModal = ({
     border: '1px solid transparent',
     boxSizing: 'border-box',
     cursor: 'grab',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
   }
 
   const resizeHandleStyles = {

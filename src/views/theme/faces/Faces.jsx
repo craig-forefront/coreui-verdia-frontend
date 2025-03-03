@@ -73,7 +73,7 @@ const ResultsRow = ({ results, probeImage, selectedIndex, setSelectedIndex, setM
               </CCardText>
               <div className="text-center mt-auto pt-2">
                 <CButton color="primary" size="sm" onClick={() => handleCandidateClick(idx)}>
-                  View Profile
+                  Compare
                 </CButton>
               </div>
             </CCardBody>
