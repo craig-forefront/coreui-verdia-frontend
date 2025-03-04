@@ -1,0 +1,14 @@
+/* Target the actual range slider elements */
+.custom-range-slider .range-slider__range {
+  background: #5e5cd0 !important;
+}
+
+.custom-range-slider .range-slider__thumb {
+  background: #5e5cd0 !important;
+  border-color: #5e5cd0 !important;
+}
+
+/* Target the track */
+.custom-range-slider .range-slider__track {
+  background: rgba(94, 92, 208, 0.3) !important;
+}
