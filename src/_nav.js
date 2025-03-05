@@ -34,6 +34,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+    name: 'Vector Search',
+    to: '/vector-search',
+  },
+  {
+    component: CNavItem,
     name: 'Detections',
     to: '/theme/detections',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,

@@ -48,6 +48,8 @@ const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
+// vectorSearch
+const VectorSearch = React.lazy(() => import('./views/vectorSearch/VectorSearch'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
@@ -57,6 +59,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
+  { path: '/vector-search', name: 'Vector Search', element: VectorSearch },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/faces', name: 'Faces', element: React.lazy(() => import('./views/theme/faces/faces')) },
   { path: '/theme/detections', name: 'Detections', element: Detections },

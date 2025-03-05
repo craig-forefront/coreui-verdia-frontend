@@ -1,4 +1,5 @@
-import { legacy_createStore as createStore, combineReducers } from 'redux'
+import { configureStore } from '@reduxjs/toolkit'
+import vectorSearchReducer from './store/vectorSearchSlice'
 
 // Initial state for sidebar and theme
 const initialState = {
@@ -36,13 +37,13 @@ const changeStateBanner = (state = initialStateBanner, action) => {
   }
 }
 
-// Combine reducers
-const rootReducer = combineReducers({
-  app: changeState,
-  banner: changeStateBanner,
-})
-
 // Create store with combined reducers
-const store = createStore(rootReducer)
+const store = configureStore({
+  reducer: {
+    vectorSearch: vectorSearchReducer,
+    app: changeState,
+    banner: changeStateBanner,
+  },
+})
 
 export default store
