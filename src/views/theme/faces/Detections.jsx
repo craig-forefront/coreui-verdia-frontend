@@ -87,7 +87,7 @@ const Detections = () => {
   };
 
   const toggleBox = (imageIndex, boxId) => {
-    const key = `${imageIndex}-${box.id}`;
+    const key = `${imageIndex}-${boxId}`;
     setSelectedBoxes((prevSelected) => {
       if (prevSelected.includes(key)) {
         return prevSelected.filter((item) => item !== key);
