@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
+
 import {
   CCloseButton,
   CSidebar,
@@ -11,6 +12,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 
+import { AppBanner } from './index'
 import { AppSidebarNav } from './AppSidebarNav'
 
 import { logo } from 'src/assets/brand/logo'
@@ -25,6 +27,7 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.app.sidebarShow)
 
   return (
+    
     <CSidebar
       className="border-end"
       colorScheme="dark"
@@ -35,6 +38,7 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
+      <AppBanner position="top" />
       <CSidebarHeader className="border-bottom" style={{ height: '85px' }} >
         <CSidebarBrand to="/" >
           <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />

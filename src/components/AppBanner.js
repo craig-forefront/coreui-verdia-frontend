@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+
 const AppBanner = ({ position, bannerText, bannerColor }) => {
   const style = {
     position: 'sticky',
