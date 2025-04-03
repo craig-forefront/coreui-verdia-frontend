@@ -34,6 +34,7 @@
     "classnames": "^2.5.1",
     "core-js": "^3.40.0",
     "install": "^0.13.0",
+    "lucide-react": "^0.487.0",
     "npm": "^11.1.0",
     "prop-types": "^15.8.1",
     "qdrant-client": "^0.0.1",

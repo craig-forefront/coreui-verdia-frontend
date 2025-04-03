@@ -12,6 +12,8 @@ import {
   CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
+import { Folder } from 'lucide-react';
+
 
 const VectorSearch = () => {
   const [files, setFiles] = useState([]);
@@ -87,19 +89,23 @@ const VectorSearch = () => {
 
   return (
     <CCard className="text-center p-4">
-      <CCardTitle>Image Upload</CCardTitle>
+      <CCardTitle>Face Image Upload</CCardTitle>
       <CCardBody>
         <div
           {...getRootProps()}
-          className="border border-dashed rounded-2xl p-5 cursor-pointer mb-3"
-          style={{ borderColor: isDragActive ? '#0d6efd' : '#ced4da' }}
+          className="rounded-2xl p-5 cursor-pointer mb-3"
+          style={{
+            border: isDragActive ? '3px dashed #0d6efd' : '5px dashed #6261cc',
+          }}
         >
           <input {...getInputProps()} />
+          <i className="bi bi-folder-fill fs-1 text-primary mb-2"></i>
           {isDragActive ? (
             <p>Drop images here...</p>
           ) : (
             <p>Drag & drop images here, or click to select</p>
           )}
+          <Folder size={48} color="#6261cc" className="mb-2" />
         </div>
 
         {files.length > 0 && (
