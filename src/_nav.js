@@ -28,6 +28,12 @@ const _nav = [
     to: '/face-search',
   },
   {
+    component: CNavItem,
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+    name: 'Results',
+    to: '/theme/faces',
+  },
+  {
     component: CNavTitle,
     name: 'Inbox',
   },

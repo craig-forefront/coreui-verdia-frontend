@@ -9,6 +9,11 @@ import DocsComponents from './DocsComponents'
 import DocsIcons from './DocsIcons'
 import DocsLink from './DocsLink'
 import DocsExample from './DocsExample'
+import CandidateCard from './CandidateCard'
+import ProbeCard from './ProbeCard'
+import ResultsRow from './ResultRow'
+import { getBorderClass, getTextColorClass } from './CandidateCard'
+
 
 export {
   AppBanner,
@@ -18,8 +23,13 @@ export {
   AppHeader,
   AppHeaderDropdown,
   AppSidebar,
+  CandidateCard,
   DocsComponents,
   DocsIcons,
   DocsLink,
   DocsExample,
+  ProbeCard,
+  ResultsRow,
+  getBorderClass,
+  getTextColorClass
 }
