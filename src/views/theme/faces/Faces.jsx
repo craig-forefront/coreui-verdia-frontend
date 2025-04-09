@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, lazy, Suspense, useCallback, useMemo, useRef } from 'react'
 import {
   CContainer,
   CRow,
@@ -7,7 +7,8 @@ import {
   CCardHeader,
   CCardText,
   CSpinner,
-  CPlaceholder
+  CPlaceholder,
+  CButton
 } from '@coreui/react'
 import image1 from '../../../assets/face1.jpeg'
 import image2 from '../../../assets/face2.jpeg'
@@ -25,6 +26,10 @@ const Faces = () => {
   const [activeProbeIndex, setActiveProbeIndex] = useState(0)
   const [modalVisible, setModalVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [visibleProbes, setVisibleProbes] = useState([])
+  const [hasMore, setHasMore] = useState(true)
+  const probesPerPage = 5
+  const observerTarget = useRef(null)
 
   // Generate mock data - optimize by reducing amount of initial data
   const generateMockData = useCallback(() => {
@@ -91,6 +96,66 @@ const Faces = () => {
           sex: idx % 2 === 0 ? 'M' : 'F',
         })),
       },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
+      {
+        probe: image1,
+        results: new Array(15).fill(null).map((_, idx) => ({
+          image: images[idx % images.length],
+          score: Math.max(100 - idx * 5, 50),
+          name: `Candidate Name is much longer to ${idx + 1}`,
+          dob: '1990-01-01',
+          sex: idx % 2 === 0 ? 'M' : 'F',
+        })),
+      },
     ]
   }, [])
 
@@ -106,6 +171,55 @@ const Faces = () => {
 
     return () => clearTimeout(timer)
   }, [generateMockData])
+
+  // Set up the initial visible probes
+  useEffect(() => {
+    if (probes.length > 0) {
+      setVisibleProbes(probes.slice(0, probesPerPage))
+      setHasMore(probes.length > probesPerPage)
+    }
+  }, [probes])
+
+  // Load more probes when the user scrolls
+  const loadMoreProbes = useCallback(() => {
+    const currentLength = visibleProbes.length
+    
+    if (currentLength >= probes.length) {
+      setHasMore(false)
+      return
+    }
+    
+    // Add the next batch of probes
+    const newProbes = probes.slice(currentLength, currentLength + probesPerPage)
+    setVisibleProbes(prev => [...prev, ...newProbes])
+    
+    // Check if we have more to load
+    if (currentLength + probesPerPage >= probes.length) {
+      setHasMore(false)
+    }
+  }, [visibleProbes.length, probes])
+
+  // Set up intersection observer for infinite scrolling
+  useEffect(() => {
+    if (!observerTarget.current || isLoading) return
+    
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMoreProbes()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    
+    observer.observe(observerTarget.current)
+    
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current)
+      }
+    }
+  }, [hasMore, isLoading, loadMoreProbes])
 
   // Get the active probe and candidate for the modal
   const activeProbe = useMemo(() => probes[activeProbeIndex], [probes, activeProbeIndex])
@@ -148,10 +262,8 @@ const Faces = () => {
 
   // For large lists, better to virtualize the entire list of probes
   const renderProbeRows = useCallback(() => {
-    // Only render up to 5 probes at a time for better performance
-    const visibleProbes = probes.slice(0, Math.min(5, probes.length))
     return <ProbeList visibleProbes={visibleProbes} />
-  }, [probes, ProbeList])
+  }, [visibleProbes, ProbeList])
 
   // Optimized placeholder - fewer placeholders, simpler structure
   const renderPlaceholders = useCallback(() => {
@@ -183,7 +295,26 @@ const Faces = () => {
 
   return (
     <CContainer className="py-4">
-      {isLoading ? renderPlaceholders() : renderProbeRows()}
+      {isLoading ? renderPlaceholders() : (
+        <>
+          {renderProbeRows()}
+          {/* Intersection observer target */}
+          {hasMore && (
+            <div ref={observerTarget} className="text-center py-4">
+              <CSpinner color="primary" />
+            </div>
+          )}
+          {!hasMore && visibleProbes.length < probes.length && (
+            <CRow className="mt-4">
+              <CCol className="text-center">
+                <CButton onClick={loadMoreProbes} color="primary">
+                  Load More Results
+                </CButton>
+              </CCol>
+            </CRow>
+          )}
+        </>
+      )}
 
       {activeProbe && activeCandidate && (
         <CandidateModal
