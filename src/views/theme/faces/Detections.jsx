@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { CRow, CCol, CButton, CFormCheck, CFormLabel } from '@coreui/react';
 import RangeSlider from 'react-range-slider-input';
 import 'react-range-slider-input/dist/style.css';
@@ -27,7 +28,10 @@ const checkboxStyle = {
 };
 
 const Detections = () => {
-  const imagesData = [
+  const location = useLocation();
+  // use the passed results or fallback to local dummy data
+  const detectionResults = location.state?.detectionResults;
+  const imagesData = detectionResults || [
     {
       url: image1,
       boundingBoxes: [

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import autoprefixer from 'autoprefixer'
+import svgr from 'vite-plugin-svgr'
 
 export default defineConfig(() => {
   return {
@@ -12,7 +13,7 @@ export default defineConfig(() => {
     css: {
       postcss: {
         plugins: [
-          autoprefixer({}), // add options if needed
+          autoprefixer({})
         ],
       },
     },
@@ -29,7 +30,15 @@ export default defineConfig(() => {
         },
       },
     },
-    plugins: [react()],
+    plugins: [
+      svgr({ 
+        exportAsDefault: true,
+        svgrOptions: {
+          icon: true,
+        }
+      }),
+      react(),
+    ],
     resolve: {
       alias: [
         {
