@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilSearch,
   cilPeople,
+  cilChart,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -26,6 +27,12 @@ const _nav = [
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
     name: 'Compare Faces',
     to: '/face-search',
+  },
+  {
+    component: CNavItem,
+    icon: <CIcon icon={cilChart} customClassName="nav-icon" />,
+    name: 'Top Score Matches',
+    to: '/scores/top-scores',
   },
   {
     component: CNavItem,

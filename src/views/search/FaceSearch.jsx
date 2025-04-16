@@ -41,7 +41,7 @@ const FaceSearch = () => {
     formData.append('file', fileObj.file);
 
     try {
-      const response = await axios.post('http://localhost:8000/detect/faces/insightface', formData, {
+      const response = await axios.post('http://localhost:8001/detect/faces/insightface', formData, {
         headers: {
           'X-API-Key': `9W6MkcI1t5qMTJAMnZQBI82Eoc266mi9WKX1mmxnQlE`,
         },
