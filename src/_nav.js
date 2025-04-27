@@ -4,19 +4,29 @@ import {
   cilSearch,
   cilPeople,
   cilChart,
+  cilVideo,
 } from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import { LucideIcon } from './components/LucideIcon'
+import { Images } from 'lucide-react'  // Add this import for the Images icon
+import { CNavGroup, CNavGroupItems, CNavItem, CNavTitle } from '@coreui/react'
+
 
 const _nav = [
   {
     component: CNavTitle,
-    name: 'Search',
+    name: 'Search Faces',
   },
   {
     component: CNavItem,
-    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
-    name: 'Search Faces',
+    name: 'Images',
     to: '/face-search',
+    icon: <LucideIcon icon={Images} to="/face-search" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Video',
+    to: '/face-search-video',
+    icon: <CIcon icon={cilVideo} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

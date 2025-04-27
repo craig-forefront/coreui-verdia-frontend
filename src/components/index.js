@@ -11,6 +11,7 @@ import DocsLink from './DocsLink'
 import DocsExample from './DocsExample'
 import CandidateCard from './CandidateCard'
 import ProbeCard from './ProbeCard'
+import LucideIcon from './LucideIcon'
 import ResultsRow from './ResultRow'
 import { getBorderClass, getTextColorClass } from './CandidateCard'
 
@@ -28,6 +29,7 @@ export {
   DocsIcons,
   DocsLink,
   DocsExample,
+  LucideIcon,
   ProbeCard,
   ResultsRow,
   getBorderClass,
