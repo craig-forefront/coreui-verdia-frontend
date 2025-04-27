@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import vectorSearchReducer from './store/vectorSearchSlice'
 import topScoresReducer from './store/topScoresSlice'
+import videoJobsReducer from './store/videoJobsSlice'
 
 // Initial state for sidebar and theme
 const initialState = {
@@ -43,6 +44,7 @@ const store = configureStore({
   reducer: {
     vectorSearch: vectorSearchReducer,
     topScores: topScoresReducer,
+    videoJobs: videoJobsReducer, // Add the videoJobsReducer
     app: changeState,
     banner: changeStateBanner,
   },

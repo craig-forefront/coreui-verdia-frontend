@@ -14,6 +14,7 @@ import ProbeCard from './ProbeCard'
 import LucideIcon from './LucideIcon'
 import ResultsRow from './ResultRow'
 import { getBorderClass, getTextColorClass } from './CandidateCard'
+import VideoPlayer from './VideoPlayer'
 
 
 export {
@@ -33,5 +34,6 @@ export {
   ProbeCard,
   ResultsRow,
   getBorderClass,
-  getTextColorClass
+  getTextColorClass,
+  VideoPlayer
 }

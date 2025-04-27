@@ -14,7 +14,7 @@ import { CNavGroup, CNavGroupItems, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
   {
     component: CNavTitle,
-    name: 'Search Faces',
+    name: 'Search',
   },
   {
     component: CNavItem,
@@ -24,7 +24,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Video',
+    name: 'Videos',
     to: '/face-search-video',
     icon: <CIcon icon={cilVideo} customClassName="nav-icon" />,
   },

@@ -1,4 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { submitVideos } from '../../store/videoJobsSlice';
 import { useDropzone } from 'react-dropzone';
 import {
   CCard,
@@ -12,13 +14,22 @@ import {
   CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
-import { Images } from 'lucide-react';
+import { Folder, Video } from 'lucide-react';
 import axios from 'axios';
 
-const FaceSearch = () => {
+const SubmitVideosPage = () => {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [s3Paths, setS3Paths] = useState("");
 
+  const handleSubmit = () => {
+    const paths = s3Paths.split('\n').map(p => p.trim()).filter(Boolean);
+    if (paths.length > 0) {
+      dispatch(submitVideos(paths));
+      setS3Paths('');
+    }
+  };
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map((file) => ({
       file,
@@ -110,7 +121,7 @@ const FaceSearch = () => {
 
   return (
     <CCard className="text-center p-4">
-      <CCardTitle>Image Upload</CCardTitle>
+      <CCardTitle>Video Upload</CCardTitle>
       <CCardBody>
         <div
           {...getRootProps()}
@@ -126,7 +137,7 @@ const FaceSearch = () => {
           ) : (
             <p>Drag & drop images here, or click to select</p>
           )}
-          <Images size={48} color="#6261cc" className="mb-2" />
+          <Video size={48} color="#6261cc" className="mb-2" />
         </div>
 
         {files.length > 0 && (
@@ -188,4 +199,4 @@ const FaceSearch = () => {
   );
 };
 
-export default FaceSearch;
+export default SubmitVideosPage;
