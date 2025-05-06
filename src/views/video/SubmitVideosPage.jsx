@@ -135,7 +135,7 @@ const SubmitVideosPage = () => {
           {isDragActive ? (
             <p>Drop images here...</p>
           ) : (
-            <p>Drag & drop images here, or click to select</p>
+            <p>Drag & drop videos here, or click to select</p>
           )}
           <Video size={48} color="#6261cc" className="mb-2" />
         </div>

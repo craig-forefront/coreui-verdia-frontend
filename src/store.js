@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import vectorSearchReducer from './store/vectorSearchSlice'
 import topScoresReducer from './store/topScoresSlice'
 import videoJobsReducer from './store/videoJobsSlice'
+import videoReducer from './store/videoSlice'
 
 // Initial state for sidebar and theme
 const initialState = {
@@ -45,9 +46,21 @@ const store = configureStore({
     vectorSearch: vectorSearchReducer,
     topScores: topScoresReducer,
     videoJobs: videoJobsReducer, // Add the videoJobsReducer
+    video: videoReducer, // Add the videoReducer for face processing functionality
     app: changeState,
     banner: changeStateBanner,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types as they might contain non-serializable values
+        ignoredActions: [
+          'video/uploadVideo/pending',
+          'video/uploadVideo/fulfilled',
+          'video/uploadVideo/rejected',
+        ],
+      },
+    }),
 })
 
 export default store

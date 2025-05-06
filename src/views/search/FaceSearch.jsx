@@ -41,9 +41,10 @@ const FaceSearch = () => {
     formData.append('file', fileObj.file);
 
     try {
-      const response = await axios.post('http://localhost:8001/detect/faces/insightface', formData, {
+      console.log(`Sending request for ${fileObj.file.name} to API...`);
+      const response = await axios.post('http://localhost:8000/detect/faces/detect/image', formData, {
         headers: {
-          'X-API-Key': `9W6MkcI1t5qMTJAMnZQBI82Eoc266mi9WKX1mmxnQlE`,
+          'X-API-Key': `_Zwptd64P3sOd9Dt02c9xBAJ5PU1MUyz0zv21f4uhzY`,
         },
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -54,14 +55,27 @@ const FaceSearch = () => {
           });
         },
       });
+      
+      console.log(`API Response for ${fileObj.file.name}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        dataStructure: Object.keys(response.data),
+        hasFaces: response.data.faces ? response.data.faces.length : 'No faces property',
+        hasImageData: !!response.data.imageData,
+      });
+      
       setFiles((prev) => {
         const updated = [...prev];
         updated[index].status = 'done';
         updated[index].progress = 100;
         return updated;
       });
-      // Return the response data for collection
-      return response.data;
+      // Return the response data with preview URL
+      return {
+        ...response.data,
+        imagePreviewUrl: fileObj.preview,  // Add the preview URL to the response
+        originalFilename: fileObj.file.name  // Add the original filename
+      };
     } catch (error) {
       console.error('Error during face detection:', error);
       setFiles((prev) => {
@@ -89,9 +103,27 @@ const FaceSearch = () => {
       })
     ).then((results) => {
       console.log('All uploads and face detections completed');
-      // Build detectionResults from the returned results
+      console.log('Raw API results:', results);
+      
+      // Filter out null results
       const detectionResults = results.filter((result) => result !== null);
-      navigate('/theme/detections', { state: { detectionResults } });
+      console.log('Filtered detectionResults:', detectionResults);
+      console.log('DetectionResults structure:', {
+        type: typeof detectionResults,
+        isArray: Array.isArray(detectionResults),
+        length: detectionResults.length,
+        firstItem: detectionResults.length > 0 ? 
+          {
+            keys: Object.keys(detectionResults[0]),
+            hasFaces: detectionResults[0].faces ? 'yes' : 'no',
+            hasImageData: detectionResults[0].imageData ? 'yes' : 'no',
+            hasPreviewUrl: detectionResults[0].imagePreviewUrl ? 'yes' : 'no',
+          } : 'No items'
+      });
+      
+      // Fixed navigation path to match routes.js configuration
+      console.log('Navigating to /theme/faces/detections with state:', { state: { detectionResults } });
+      navigate('/theme/faces/detections', { state: { detectionResults } });
     });
   };
 
@@ -139,7 +171,7 @@ const FaceSearch = () => {
               Start Upload
             </CButton>
 
-            <CListGroup className="mb-3 text-start">
+            <CListGroup className="mb-3 text-start">``
               {files.map((fileObj, index) => (
                 <CListGroupItem
                   key={index}

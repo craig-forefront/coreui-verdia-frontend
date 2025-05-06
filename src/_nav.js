@@ -5,9 +5,10 @@ import {
   cilPeople,
   cilChart,
   cilVideo,
+  cilFace,
 } from '@coreui/icons'
 import { LucideIcon } from './components/LucideIcon'
-import { Images } from 'lucide-react'  // Add this import for the Images icon
+import { Images, ScanFace } from 'lucide-react'  // Add ScanFace icon for face detection
 import { CNavGroup, CNavGroupItems, CNavItem, CNavTitle } from '@coreui/react'
 
 
@@ -31,6 +32,12 @@ const _nav = [
   {
     component: CNavTitle,
     name: 'Analyze',
+  },
+  {
+    component: CNavItem,
+    icon: <LucideIcon icon={ScanFace} to="/theme/faces/upload" />,
+    name: 'Detect Faces',
+    to: '/theme/faces/upload',
   },
   {
     component: CNavItem,

@@ -1,14 +1,47 @@
-/* Target the actual range slider elements */
+/* Custom styling for range sliders and face detection UI */
+.custom-range-slider {
+  height: 5px;
+  margin: 10px 0 20px;
+}
+
 .custom-range-slider .range-slider__range {
-  background: #5e5cd0 !important;
+  background-color: #3399ff; /* CoreUI primary color */
 }
 
 .custom-range-slider .range-slider__thumb {
-  background: #5e5cd0 !important;
-  border-color: #5e5cd0 !important;
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border: 2px solid #3399ff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-/* Target the track */
-.custom-range-slider .range-slider__track {
-  background: rgba(94, 92, 208, 0.3) !important;
+/* Hover state for the face detection boxes */
+[class^='face-box-'] {
+  transition: border-color 0.2s ease;
+}
+
+[class^='face-box-']:hover {
+  border-color: #2eb85c !important; /* CoreUI success color */
+}
+
+/* Face badge styling */
+.face-badge {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  position: absolute;
+  top: -24px;
+  left: 0;
+  z-index: 100;
+}
+
+/* Add a subtle highlight to selected boxes */
+.face-box-selected {
+  box-shadow: 0 0 0 3px rgba(50, 31, 219, 0.3);
 }

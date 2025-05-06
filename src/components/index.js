@@ -15,6 +15,10 @@ import LucideIcon from './LucideIcon'
 import ResultsRow from './ResultRow'
 import { getBorderClass, getTextColorClass } from './CandidateCard'
 import VideoPlayer from './VideoPlayer'
+import VideoUploader from './VideoUploader'
+import VideoProcessingStatus from './VideoProcessingStatus'
+import WebSockerManager from './WebSocketManager'
+import FaceDetail from './FaceDetail'
 
 
 export {
@@ -30,10 +34,14 @@ export {
   DocsIcons,
   DocsLink,
   DocsExample,
+  FaceDetail,
   LucideIcon,
   ProbeCard,
   ResultsRow,
   getBorderClass,
   getTextColorClass,
-  VideoPlayer
+  VideoPlayer,
+  VideoProcessingStatus,
+  VideoUploader,
+  WebSockerManager
 }
