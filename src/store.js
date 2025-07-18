@@ -4,6 +4,12 @@ import topScoresReducer from './store/topScoresSlice'
 import videoJobsReducer from './store/videoJobsSlice'
 import videoReducer from './store/videoSlice'
 import searchHistoryReducer from './store/searchHistorySlice'
+import uiReducer from './store/uiSlice'
+import faceProcessingReducer from './store/faceProcessingSlice'
+import userPreferencesReducer from './store/userPreferencesSlice'
+import faceGroupsReducer from './store/faceGroupsSlice'
+import imageProcessingReducer from './store/imageProcessingSlice'
+import webSocketReducer from './store/webSocketSlice'
 
 // Initial state for sidebar and theme
 const initialState = {
@@ -49,6 +55,12 @@ const store = configureStore({
     videoJobs: videoJobsReducer, // Add the videoJobsReducer
     video: videoReducer, // Add the videoReducer for face processing functionality
     searchHistory: searchHistoryReducer, // Add the searchHistoryReducer
+    ui: uiReducer, // Add UI state management
+    faceProcessing: faceProcessingReducer, // Add face processing state management
+    userPreferences: userPreferencesReducer, // Add user preferences management
+    faceGroups: faceGroupsReducer, // Add face groups search and filtering management
+    imageProcessing: imageProcessingReducer, // Add image processing and upload management
+    webSocket: webSocketReducer, // Add WebSocket connection and real-time communication management
     app: changeState,
     banner: changeStateBanner,
   },
@@ -60,6 +72,18 @@ const store = configureStore({
           'video/uploadVideo/pending',
           'video/uploadVideo/fulfilled',
           'video/uploadVideo/rejected',
+          'imageProcessing/uploadImage/pending',
+          'imageProcessing/uploadImage/fulfilled',
+          'imageProcessing/uploadImage/rejected',
+          'imageProcessing/detectFaces/pending',
+          'imageProcessing/detectFaces/fulfilled',
+          'imageProcessing/detectFaces/rejected',
+          'webSocket/testConnection/pending',
+          'webSocket/testConnection/fulfilled',
+          'webSocket/testConnection/rejected',
+          'webSocket/reconnectWebSocket/pending',
+          'webSocket/reconnectWebSocket/fulfilled',
+          'webSocket/reconnectWebSocket/rejected',
         ],
       },
     }),

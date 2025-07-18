@@ -503,4 +503,33 @@ export const {
     reorderGroups
 } = videoSlice.actions;
 
+// Selectors for the refactored VideoUploader component
+export const selectUploadStatus = (state) => state.video.uploadStatus;
+export const selectCurrentUpload = (state) => state.video.currentUpload;
+export const selectUploadError = (state) => state.video.error;
+export const selectProcessingStatus = (state) => state.video.processingStatus;
+export const selectVideos = (state) => state.video.videos;
+export const selectVideoById = (videoId) => (state) => state.video.videos[videoId];
+export const selectPresignedUrls = (state) => state.video.presignedUrls;
+
+// Computed selectors
+export const selectIsUploading = (state) => {
+    const status = selectUploadStatus(state);
+    return status === 'loading' || status === 'uploading';
+};
+
+export const selectCanUpload = (state) => {
+    const status = selectUploadStatus(state);
+    const currentUpload = selectCurrentUpload(state);
+    return status === 'idle' && !currentUpload.file;
+};
+
+export const selectUploadProgress = (state) => {
+    // This would be enhanced to track actual upload progress
+    const status = selectUploadStatus(state);
+    if (status === 'loading') return 50; // Example progress
+    if (status === 'succeeded') return 100;
+    return 0;
+};
+
 export default videoSlice.reducer;

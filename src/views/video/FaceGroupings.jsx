@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -18,6 +18,9 @@ import FaceDetailModal from '../../components/face/FaceDetailModal';
 import VideoSelector from '../../components/face/VideoSelector';
 import SearchAndFilterBar from '../../components/face/SearchAndFilterBar';
 
+// Import Redux actions
+import { setFaceDetailModalOpen } from '../../store/uiSlice';
+
 // Import custom hooks
 import useFaceGroups from '../../hooks/useFaceGroups';
 import usePresignedUrls from '../../hooks/usePresignedUrls';
@@ -26,12 +29,13 @@ import usePresignedUrls from '../../hooks/usePresignedUrls';
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const FaceGroupings = () => {
+    const dispatch = useDispatch();
+    
     // Video selection state
     const videos = useSelector(state => state.video.videos);
     const [selectedVideoId, setSelectedVideoId] = useState(null);
     
-    // Modal state
-    const [detailModalOpen, setDetailModalOpen] = useState(false);
+    // Modal state managed by Redux
     const [selectedGroup, setSelectedGroup] = useState(null);
 
     // Use our custom hooks for face groups and URL management
@@ -82,7 +86,7 @@ const FaceGroupings = () => {
         const group = localFaceGroups.find(g => g.id === groupId);
         if (group) {
             setSelectedGroup(group);
-            setDetailModalOpen(true);
+            dispatch(setFaceDetailModalOpen(true));
         }
     };
 
@@ -184,9 +188,7 @@ const FaceGroupings = () => {
                 {/* Face Group Detail Modal */}
                 {selectedGroup && (
                     <FaceDetailModal
-                        show={detailModalOpen}
                         group={selectedGroup}
-                        onClose={() => setDetailModalOpen(false)}
                         onUpdateGroupName={handleUpdateGroupName}
                         onMoveFace={handleMoveFace}
                         onDeleteFace={handleDeleteFace}
