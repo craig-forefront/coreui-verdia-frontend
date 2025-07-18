@@ -4,7 +4,9 @@ import React from 'react'
 const FaceSearch = React.lazy(() => import('./views/search/FaceSearch'))
 const Detections = React.lazy(() => import('./views/theme/faces/Detections'))
 const ImageUploader = React.lazy(() => import('./views/theme/faces/ImageUploader'))
+const ManualEmbedding = React.lazy(() => import('./views/theme/faces/ManualEmbedding'))
 const TopScoresView = React.lazy(() => import('./views/scores/TopScoresView'))
+const SearchHistoryView = React.lazy(() => import('./views/history/SearchHistoryView'))
 const VideoUploader = React.lazy(() => import('./components/VideoUploader'))
 const FaceGroupings = React.lazy(() => import('./views/video/FaceGroupings'))
 
@@ -31,7 +33,9 @@ const routes = [
   { path: '/theme/faces', name: 'Faces', exact: true, element: React.lazy(() => import('./views/theme/faces/faces')) },
   { path: '/theme/faces/upload', name: 'Upload Face Image', element: ImageUploader },
   { path: '/theme/faces/detections', name: 'Face Detections', element: Detections },
-  { path: '/scores/top-scores', name: 'Top Score Matches', element: TopScoresView }
+  { path: '/theme/faces/manual-embedding', name: 'Manual Face Embedding', element: ManualEmbedding },
+  { path: '/scores/top-scores', name: 'Top Score Matches', element: TopScoresView },
+  { path: '/history/search', name: 'Search History', element: SearchHistoryView }
 ]
 
 export default routes

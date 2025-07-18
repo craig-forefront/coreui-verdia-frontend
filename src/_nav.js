@@ -6,6 +6,7 @@ import {
   cilChart,
   cilVideo,
   cilFace,
+  cilHistory,
 } from '@coreui/icons'
 import { LucideIcon } from './components/LucideIcon'
 import { Images, ScanFace } from 'lucide-react'  // Add ScanFace icon for face detection
@@ -41,6 +42,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    icon: <CIcon icon={cilFace} customClassName="nav-icon" />,
+    name: 'Manual Embedding',
+    to: '/theme/faces/manual-embedding',
+  },
+  {
+    component: CNavItem,
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
     name: 'Compare Faces',
     to: '/face-search',
@@ -50,6 +57,12 @@ const _nav = [
     icon: <CIcon icon={cilChart} customClassName="nav-icon" />,
     name: 'Top Score Matches',
     to: '/scores/top-scores',
+  },
+  {
+    component: CNavItem,
+    icon: <CIcon icon={cilHistory} customClassName="nav-icon" />,
+    name: 'Search History',
+    to: '/history/search',
   },
   {
     component: CNavItem,

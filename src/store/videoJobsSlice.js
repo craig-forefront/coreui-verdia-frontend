@@ -3,6 +3,8 @@ import axios from 'axios';
 
 // Fix for process.env not being defined
 let API_BASE = "http://localhost:8000";
+let API_KEY = import.meta.env.REACT_APP_API_KEY || import.meta.env.VITE_API_KEY;
+
 try {
   // Try using process.env if available (typical CRA setup)
   if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
@@ -17,12 +19,20 @@ try {
 }
 
 export const submitVideos = createAsyncThunk('videoJobs/submitVideos', async (s3Paths) => {
-  const response = await axios.post(`${API_BASE}/submit_videos`, { s3_video_paths: s3Paths });
+  const response = await axios.post(`${API_BASE}/submit_videos`, { s3_video_paths: s3Paths }, {
+    headers: {
+      'X-API-Key': API_KEY
+    }
+  });
   return response.data.jobs;
 });
 
 export const fetchJobResults = createAsyncThunk('videoJobs/fetchJobResults', async (videoId) => {
-  const response = await axios.get(`${API_BASE}/job_results/${videoId}`);
+  const response = await axios.get(`${API_BASE}/job_results/${videoId}`, {
+    headers: {
+      'X-API-Key': API_KEY
+    }
+  });
   return { videoId, faces: response.data };
 });
 

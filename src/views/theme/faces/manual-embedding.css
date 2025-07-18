@@ -1,0 +1,177 @@
+/* Manual Embedding Component Styles */
+
+.dropzone {
+  transition: all 0.3s ease;
+}
+
+.dropzone:hover {
+  border-color: #007bff !important;
+  background-color: #f8f9fa;
+}
+
+.dropzone.active {
+  border-color: #28a745 !important;
+  background-color: #d4edda;
+}
+
+/* Canvas overlay styles */
+.image-container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.image-container canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Face detection visualization */
+.face-bbox {
+  position: absolute;
+  border: 24px solid #32cd32;
+  pointer-events: none;
+  background: rgba(50, 205, 50, 0.1);
+}
+
+.face-bbox.manual {
+  border-color: #32cd32;
+  border-style: dashed;
+  border-width: 24px;
+  background: rgba(50, 205, 50, 0.1);
+}
+
+.face-bbox.drawing {
+  border-color: #007bff;
+  border-style: dashed;
+  border-width: 24px;
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.face-label {
+  position: absolute;
+  top: -25px;
+  left: 0;
+  background: rgba(50, 205, 50, 0.9);
+  color: white;
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+.face-label.manual {
+  background: rgba(50, 205, 50, 0.9);
+}
+
+.face-label.drawing {
+  background: rgba(0, 123, 255, 0.8);
+}
+
+/* Key points visualization */
+.keypoint {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ffc107;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Results section */
+.embedding-result {
+  transition: all 0.3s ease;
+}
+
+.embedding-result:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress indicators */
+.detection-progress {
+  margin: 10px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dropzone {
+    padding: 20px;
+  }
+}
+
+/* Custom checkbox styles for better visibility */
+.form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* Tooltip styles */
+.tooltip-inner {
+  max-width: 300px;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Button group spacing */
+.btn-group .form-check {
+  margin-right: 1rem;
+}
+
+/* Code display for probe IDs */
+code {
+  font-size: 0.875em;
+  color: #e83e8c;
+  background-color: #f8f9fa;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* Embedding vector display */
+.embedding-vector {
+  max-height: 200px;
+  overflow-y: auto;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+/* Success/Error message styling */
+.alert {
+  margin-bottom: 1rem;
+}
+
+.alert-success {
+  border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+  border-left: 4px solid #dc3545;
+}

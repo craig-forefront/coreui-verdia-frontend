@@ -103,7 +103,11 @@ const Detections = () => {
       console.log(`Processing result ${index + 1}:`, {
         hasImagePreview: !!result.imagePreviewUrl,
         faceCount: result.faces?.length || 0,
-        originalFilename: result.originalFilename || 'Not available'
+        originalFilename: result.originalFilename || 'Not available',
+        urlType: result.imagePreviewUrl ? 
+          (result.imagePreviewUrl.startsWith('blob:') ? 'blob URL' :
+           result.imagePreviewUrl.startsWith('data:') ? 'data URL' : 'other') : 'none',
+        urlLength: result.imagePreviewUrl ? result.imagePreviewUrl.length : 0
       });
       
       const processedResult = {
@@ -172,6 +176,16 @@ const Detections = () => {
 
   const handleImageError = (e, imgIndex) => {
     console.error(`Image ${imgIndex} failed to load:`, e.target.src);
+    console.error('Image error details:', {
+      imgIndex,
+      src: e.target.src,
+      srcType: e.target.src.startsWith('blob:') ? 'blob URL' : 
+               e.target.src.startsWith('data:') ? 'data URL' : 
+               e.target.src.startsWith('http') ? 'HTTP URL' : 'unknown',
+      errorType: e.type,
+      naturalWidth: e.target.naturalWidth,
+      naturalHeight: e.target.naturalHeight
+    });
   };
 
   const getAdjustedBox = (box, scale) => {

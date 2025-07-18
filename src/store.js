@@ -3,6 +3,7 @@ import vectorSearchReducer from './store/vectorSearchSlice'
 import topScoresReducer from './store/topScoresSlice'
 import videoJobsReducer from './store/videoJobsSlice'
 import videoReducer from './store/videoSlice'
+import searchHistoryReducer from './store/searchHistorySlice'
 
 // Initial state for sidebar and theme
 const initialState = {
@@ -47,6 +48,7 @@ const store = configureStore({
     topScores: topScoresReducer,
     videoJobs: videoJobsReducer, // Add the videoJobsReducer
     video: videoReducer, // Add the videoReducer for face processing functionality
+    searchHistory: searchHistoryReducer, // Add the searchHistoryReducer
     app: changeState,
     banner: changeStateBanner,
   },

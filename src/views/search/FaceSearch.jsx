@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import { Images } from 'lucide-react';
 import axios from 'axios';
 
+const API_KEY = import.meta.env.REACT_APP_API_KEY;
+
 const FaceSearch = () => {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ const FaceSearch = () => {
       console.log(`Sending request for ${fileObj.file.name} to API...`);
       const response = await axios.post('http://localhost:8000/detect/faces/detect/image', formData, {
         headers: {
-          'X-API-Key': `_Zwptd64P3sOd9Dt02c9xBAJ5PU1MUyz0zv21f4uhzY`,
+          'X-API-Key': API_KEY,
         },
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -70,10 +72,18 @@ const FaceSearch = () => {
         updated[index].progress = 100;
         return updated;
       });
-      // Return the response data with preview URL
+      
+      // Convert blob URL to data URL for better persistence across navigation
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(fileObj.file);
+      });
+      
+      // Return the response data with data URL instead of blob URL
       return {
         ...response.data,
-        imagePreviewUrl: fileObj.preview,  // Add the preview URL to the response
+        imagePreviewUrl: dataUrl,  // Use data URL instead of blob URL
         originalFilename: fileObj.file.name  // Add the original filename
       };
     } catch (error) {
@@ -129,14 +139,21 @@ const FaceSearch = () => {
 
   const removeFile = (index) => {
     setFiles((prev) => {
-      URL.revokeObjectURL(prev[index].preview);
+      const fileToRemove = prev[index];
+      if (fileToRemove.preview && fileToRemove.preview.startsWith('blob:')) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
       return prev.filter((_, i) => i !== index);
     });
   };
 
   useEffect(() => {
     return () => {
-      files.forEach((fileObj) => URL.revokeObjectURL(fileObj.preview));
+      files.forEach((fileObj) => {
+        if (fileObj.preview && fileObj.preview.startsWith('blob:')) {
+          URL.revokeObjectURL(fileObj.preview);
+        }
+      });
     };
   }, [files]);
 

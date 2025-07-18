@@ -24,6 +24,7 @@ import { cilX, cilPencil, cilSave, cilTrash, cilArrowLeft, cilArrowRight } from 
 
 // Get API URL from environment or use default
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_KEY = import.meta.env.REACT_APP_API_KEY;
 
 // Create axios instance with default configs
 const axiosInstance = axios.create({
@@ -32,6 +33,7 @@ const axiosInstance = axios.create({
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'X-API-Key': API_KEY
     }
 });
 

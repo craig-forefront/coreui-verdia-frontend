@@ -1,0 +1,93 @@
+/* Manual Embedding Styles */
+.face-bbox {
+  position: absolute;
+  border: 24px solid #32cd32; /* Lime green with 24px thickness */
+  border-style: dashed;
+  pointer-events: none;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.face-bbox-manual {
+  border-color: #32cd32; /* Lime green for manual selections */
+  border-style: dashed;
+}
+
+.face-bbox-detected {
+  border-color: #007bff; /* Blue for auto-detected faces */
+  border-style: solid;
+}
+
+.face-bbox-label {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  background: rgba(50, 205, 50, 0.8); /* Lime green background */
+  color: white;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Key Point Styles */
+.key-point {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ff1493; /* Deep pink for manual key points */
+  border: 2px solid #ffffff;
+  pointer-events: none;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+}
+
+.key-point-auto {
+  background-color: #ffd700; /* Gold/yellow for auto-detected key points */
+}
+
+.key-point-manual {
+  background-color: #ff1493; /* Deep pink for manual key points */
+}
+
+.key-point-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px;
+  font-weight: bold;
+  color: white;
+  pointer-events: none;
+}
+
+/* Mode Control Styles */
+.drawing-mode-controls {
+  background: #f8f9fa;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mode-button-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.key-point-counter {
+  font-weight: bold;
+  color: #495057;
+}
+
+.key-point-mode-indicator {
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+}

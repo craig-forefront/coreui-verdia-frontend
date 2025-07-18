@@ -3,6 +3,7 @@ import axios from 'axios';
 import SparkMD5 from 'spark-md5';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_KEY = import.meta.env.REACT_APP_API_KEY;
 
 // Function to calculate MD5 hash of a file
 const calculateMD5 = (file) => {
@@ -59,7 +60,8 @@ export const uploadVideo = createAsyncThunk(
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
+                        'X-API-Key': API_KEY
                     },
                     onUploadProgress: (progressEvent) => {
                         // You could dispatch progress updates here if needed
@@ -82,7 +84,11 @@ export const startProcessing = createAsyncThunk(
     'video/startProcessing',
     async (videoId, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${API_URL}/api/videos/${videoId}/process`);
+            const response = await axios.post(`${API_URL}/api/videos/${videoId}/process`, {}, {
+                headers: {
+                    'X-API-Key': API_KEY
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || { detail: error.message });
@@ -95,7 +101,11 @@ export const checkVideoStatus = createAsyncThunk(
     'video/checkStatus',
     async (videoId, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${API_URL}/api/videos/${videoId}/status`);
+            const response = await axios.get(`${API_URL}/api/videos/${videoId}/status`, {
+                headers: {
+                    'X-API-Key': API_KEY
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || { detail: error.message });
@@ -108,7 +118,11 @@ export const fetchFaceGroups = createAsyncThunk(
     'video/fetchFaceGroups',
     async (videoId, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${API_URL}/api/face-groups/${videoId}/face-groups`);
+            const response = await axios.get(`${API_URL}/api/face-groups/${videoId}/face-groups`, {
+                headers: {
+                    'X-API-Key': API_KEY
+                }
+            });
             return { videoId, faceGroups: response.data.face_groups };
         } catch (error) {
             return rejectWithValue(error.response?.data || { detail: error.message });
@@ -122,7 +136,13 @@ export const updateFaceGroupName = createAsyncThunk(
     async ({ videoId, groupId, newName }, { rejectWithValue }) => {
         try {
             const response = await axios.put(
-                `${API_URL}/api/face-groups/${groupId}/name?video_id=${videoId}&custom_name=${encodeURIComponent(newName)}`
+                `${API_URL}/api/face-groups/${groupId}/name?video_id=${videoId}&custom_name=${encodeURIComponent(newName)}`,
+                {},
+                {
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                }
             );
             return { videoId, groupId, newName, response: response.data };
         } catch (error) {
@@ -137,7 +157,13 @@ export const moveFaceToGroup = createAsyncThunk(
     async ({ videoId, fromGroupId, toGroupId, faceId }, { rejectWithValue }) => {
         try {
             const response = await axios.post(
-                `${API_URL}/api/face-groups/${fromGroupId}/move-face?video_id=${videoId}&target_group_id=${toGroupId}&face_id=${faceId}`
+                `${API_URL}/api/face-groups/${fromGroupId}/move-face?video_id=${videoId}&target_group_id=${toGroupId}&face_id=${faceId}`,
+                {},
+                {
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                }
             );
             return { videoId, fromGroupId, toGroupId, faceId, response: response.data };
         } catch (error) {
@@ -152,7 +178,12 @@ export const deleteFaceFromGroup = createAsyncThunk(
     async ({ videoId, groupId, faceId }, { rejectWithValue }) => {
         try {
             const response = await axios.delete(
-                `${API_URL}/api/face-groups/${groupId}/faces/${faceId}?video_id=${videoId}`
+                `${API_URL}/api/face-groups/${groupId}/faces/${faceId}?video_id=${videoId}`,
+                {
+                    headers: {
+                        'X-API-Key': API_KEY
+                    }
+                }
             );
             return { videoId, groupId, faceId, response: response.data };
         } catch (error) {
@@ -180,7 +211,11 @@ export const fetchFaceImageUrl = createAsyncThunk(
     'video/fetchFaceImageUrl',
     async (face_id, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${API_URL}/api/face-images/${face_id}`);
+            const response = await axios.get(`${API_URL}/api/face-images/${face_id}`, {
+                headers: {
+                    'X-API-Key': API_KEY
+                }
+            });
             return { face_id, url: response.data.url };
         } catch (error) {
             return rejectWithValue(error.response?.data || { detail: error.message });

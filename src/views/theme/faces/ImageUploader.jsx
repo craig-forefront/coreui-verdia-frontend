@@ -13,6 +13,8 @@ import {
 } from '@coreui/react';
 import axios from 'axios';
 
+const API_KEY = import.meta.env.REACT_APP_API_KEY;
+
 const ImageUploader = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -55,11 +57,12 @@ const ImageUploader = () => {
       
       // Call the detect_faces API endpoint
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/detect/faces`,
+        `${import.meta.env.REACT_APP_API_URL}/detect/faces`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'X-API-Key': API_KEY
           },
           responseType: 'json',
         }
@@ -68,8 +71,13 @@ const ImageUploader = () => {
       // Get the image data to pass along with the detection results
       // We need the original image to display with the bounding boxes
       const imageResponse = await axios.get(
-        `${process.env.REACT_APP_API_URL}/image/${response.data.probe_id}`,
-        { responseType: 'arraybuffer' }
+        `${import.meta.env.REACT_APP_API_URL}/image/${response.data.probe_id}`,
+        { 
+          responseType: 'arraybuffer',
+          headers: {
+            'X-API-Key': API_KEY
+          }
+        }
       );
       
       // Combine the detection results with the image data
