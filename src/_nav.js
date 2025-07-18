@@ -8,7 +8,7 @@ import {
   cilFace,
   cilHistory,
 } from '@coreui/icons'
-import { LucideIcon } from './components/LucideIcon'
+import { LucideIcon } from './components/ui/LucideIcon'
 import { Images, ScanFace } from 'lucide-react'  // Add ScanFace icon for face detection
 import { CNavGroup, CNavGroupItems, CNavItem, CNavTitle } from '@coreui/react'
 

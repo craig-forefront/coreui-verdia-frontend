@@ -25,8 +25,9 @@ import {
   cilSun,
 } from '@coreui/icons'
 
-import { AppBanner, AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
+import AppBanner from './AppBanner'
+import AppBreadcrumb from './AppBreadcrumb'
+import AppHeaderDropdown from './AppHeaderDropdown'
 
 const AppHeader = () => {
   const headerRef = useRef()

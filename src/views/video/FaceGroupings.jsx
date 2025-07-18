@@ -13,10 +13,10 @@ import CIcon from '@coreui/icons-react';
 import { cilGroup, cilOptions } from '@coreui/icons';
 
 // Import extracted components
-import FaceGroupCard from '../../components/faces/FaceGroupCard';
-import FaceDetailModal from '../../components/faces/FaceDetailModal';
-import VideoSelector from '../../components/faces/VideoSelector';
-import SearchAndFilterBar from '../../components/faces/SearchAndFilterBar';
+import FaceGroupCard from '../../components/face/FaceGroupCard';
+import FaceDetailModal from '../../components/face/FaceDetailModal';
+import VideoSelector from '../../components/face/VideoSelector';
+import SearchAndFilterBar from '../../components/face/SearchAndFilterBar';
 
 // Import custom hooks
 import useFaceGroups from '../../hooks/useFaceGroups';

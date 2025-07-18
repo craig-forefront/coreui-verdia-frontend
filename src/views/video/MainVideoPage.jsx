@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import VideoProcessingStatus from '../../components/VideoProcessingStatus';
-import VideoUploader from '../../components/VideoUploader';
+import VideoProcessingStatus from '../../components/video/VideoProcessingStatus';
+import VideoUploader from '../../components/video/VideoUploader';
 import FaceGroupings from './FaceGroupings';
-import FaceGroupCard from '../../components/faces/FaceGroupCard';
+import FaceGroupCard from '../../components/face/FaceGroupCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { cilCloudUpload, cilList, cilFace } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';

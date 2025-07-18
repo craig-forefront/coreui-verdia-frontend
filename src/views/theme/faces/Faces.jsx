@@ -13,12 +13,12 @@ import {
 import image1 from '../../../assets/face1.jpeg'
 import image2 from '../../../assets/face2.jpeg'
 import image3 from '../../../assets/face3.jpeg'
-import CandidateModal from '../../../components/CandidateModal'
-import ProbeCard from '../../../components/ProbeCard'
+import CandidateModal from '../../../components/ui/CandidateModal'
+import ProbeCard from '../../../components/ui/ProbeCard'
 
 
 // Use dynamic import instead of custom timeout promise
-const ResultsRow = lazy(() => import('../../../components/ResultRow'))
+const ResultsRow = lazy(() => import('../../../components/ui/ResultRow'))
 
 const Faces = () => {
   const [probes, setProbes] = useState([])

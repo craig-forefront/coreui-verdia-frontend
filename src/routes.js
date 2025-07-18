@@ -7,7 +7,7 @@ const ImageUploader = React.lazy(() => import('./views/theme/faces/ImageUploader
 const ManualEmbedding = React.lazy(() => import('./views/theme/faces/ManualEmbedding'))
 const TopScoresView = React.lazy(() => import('./views/scores/TopScoresView'))
 const SearchHistoryView = React.lazy(() => import('./views/history/SearchHistoryView'))
-const VideoUploader = React.lazy(() => import('./components/VideoUploader'))
+const VideoUploader = React.lazy(() => import('./components/video/VideoUploader'))
 const FaceGroupings = React.lazy(() => import('./views/video/FaceGroupings'))
 
 // Import MainVideoPage directly without lazy loading to prevent flickering during navigation

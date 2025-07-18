@@ -5,7 +5,7 @@ import {
     startProcessing,
     setCurrentFile,
     clearCurrentUpload
-} from '../store/videoSlice';
+} from '../../store/videoSlice';
 import {
     CButton,
     CCard,

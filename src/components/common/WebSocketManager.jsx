@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateProcessingStatus } from '../store/videoSlice';
+import { updateProcessingStatus } from '../../store/videoSlice';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 // Convert http/https to ws/wss

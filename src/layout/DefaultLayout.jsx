@@ -1,6 +1,5 @@
 import React from 'react'
-import { AppBanner, AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
-import WebSocketManager from '../components/WebSocketManager'
+import { AppBanner, AppContent, AppSidebar, AppFooter, AppHeader, WebSocketManager } from '../components/index'
 
 const DefaultLayout = () => {
   return (
