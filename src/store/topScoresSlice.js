@@ -1,11 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { PRIMARY_API_BASE_URL, API_KEY } from '../config/api.js'
 
-// Base API URL for backend requests
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-
-// API Key for authentication
-const API_KEY = "9W6MkcI1t5qMTJAMnZQBI82Eoc266mi9WKX1mmxnQlE"
+const API_BASE_URL = PRIMARY_API_BASE_URL;
 
 // Thunk for fetching top scores with filters
 export const fetchTopScores = createAsyncThunk(

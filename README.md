@@ -79,6 +79,28 @@ or
 $ yarn install
 ```
 
+### API Configuration
+
+This application requires configuration for two backend APIs. Copy the example environment file and update it with your API endpoints:
+
+``` bash
+$ cp .env.example .env
+```
+
+Edit `.env` file with your API URLs:
+```env
+# Primary API (face detection and processing) - typically port 8000
+VITE_PRIMARY_API_URL=http://localhost:8000
+
+# Secondary API (InsightFace processing) - typically port 8001
+VITE_SECONDARY_API_URL=http://localhost:8001
+
+# API Authentication Key
+VITE_API_KEY=your_api_key_here
+```
+
+For detailed configuration options, see [docs/API_CONFIGURATION.md](docs/API_CONFIGURATION.md).
+
 ### Basic usage
 
 ``` bash

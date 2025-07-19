@@ -1,11 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { PRIMARY_API_BASE_URL, API_KEY } from '../config/api.js';
 
-// Search history is on the veridra-backend (port 8000), not the face_video backend (port 8001)
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:8000'
-
-// API Key for authentication (consistent with other slices)
-const API_KEY = import.meta.env.REACT_APP_API_KEY || "9W6MkcI1t5qMTJAMnZQBI82Eoc266mi9WKX1mmxnQlE"
+const API_URL = PRIMARY_API_BASE_URL;
 
 // Async thunk for fetching search history
 export const fetchSearchHistory = createAsyncThunk(

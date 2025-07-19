@@ -1,21 +1,16 @@
 import axios from 'axios';
-
-// Get API URL from environment or use default
-const API_URL = import.meta.env.VITE_API_URL || import.meta.env.REACT_APP_API_URL || '/api';
-
-// Get API key from environment
-const API_KEY = import.meta.env.REACT_APP_API_KEY || import.meta.env.VITE_API_KEY;
+import { 
+  API_ENDPOINTS, 
+  PRIMARY_API_BASE_URL, 
+  API_KEY, 
+  DEFAULT_AXIOS_CONFIG,
+  getPrimaryApiUrl 
+} from '../config/api.js';
 
 // Create axios instance with default configurations
 const axiosInstance = axios.create({
-    baseURL: API_URL,
-    withCredentials: false,
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-API-Key': API_KEY || '_Zwptd64P3sOd9Dt02c9xBAJ5PU1MUyz0zv21f4uhzY',
-    },
-    timeout: 10000 // 10 second timeout
+    baseURL: PRIMARY_API_BASE_URL,
+    ...DEFAULT_AXIOS_CONFIG
 });
 
 /**
@@ -30,7 +25,7 @@ export const fetchPresignedUrls = async (faceIds) => {
     
     try {
         console.log(`Fetching presigned URLs for ${faceIds.length} faces in batch`);
-        const response = await axiosInstance.post(`/api/face-images/presigned-urls`, { faceIds });
+        const response = await axiosInstance.post(API_ENDPOINTS.PRIMARY.ENDPOINTS.FACE_IMAGES_PRESIGNED, { faceIds });
         
         if (response.data && response.data.urls) {
             console.log(`Successfully fetched ${Object.keys(response.data.urls).length} presigned URLs`);
@@ -68,7 +63,7 @@ export const fetchPresignedUrl = async (imagePath) => {
         const matches = imagePath.match(/faces\/([^/.]+)\.jpg/);
         if (matches && matches[1]) {
             const face_id = matches[1];
-            const response = await axiosInstance.get(`/api/face-images/${face_id}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.PRIMARY.ENDPOINTS.FACE_IMAGE_SINGLE}/${face_id}`);
             
             if (response.data && response.data.url) {
                 return response.data.url;
@@ -80,7 +75,7 @@ export const fetchPresignedUrl = async (imagePath) => {
             // Fallback to the old method if we can't extract a face ID
             const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
             
-            const response = await axiosInstance.get(`/api/face-images/presigned-url`, {
+            const response = await axiosInstance.get(`${API_ENDPOINTS.PRIMARY.ENDPOINTS.FACE_IMAGE_SINGLE}/presigned-url`, {
                 params: { imagePath: path }
             });
             

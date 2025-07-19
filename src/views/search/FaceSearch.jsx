@@ -14,8 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Images } from 'lucide-react';
 import axios from 'axios';
-
-const API_KEY = import.meta.env.REACT_APP_API_KEY;
+import { getPrimaryApiUrl, API_ENDPOINTS, API_KEY } from '../../config/api.js';
 
 const FaceSearch = () => {
   const [files, setFiles] = useState([]);
@@ -44,7 +43,7 @@ const FaceSearch = () => {
 
     try {
       console.log(`Sending request for ${fileObj.file.name} to API...`);
-      const response = await axios.post('http://localhost:8000/detect/faces/detect/image', formData, {
+      const response = await axios.post(getPrimaryApiUrl(API_ENDPOINTS.PRIMARY.ENDPOINTS.FACE_DETECTION), formData, {
         headers: {
           'X-API-Key': API_KEY,
         },

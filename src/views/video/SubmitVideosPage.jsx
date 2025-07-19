@@ -16,8 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Folder, Video } from 'lucide-react';
 import axios from 'axios';
-
-const API_KEY = import.meta.env.REACT_APP_API_KEY;
+import { getSecondaryApiUrl, API_ENDPOINTS, API_KEY } from '../../config/api.js';
 
 const SubmitVideosPage = () => {
   const [files, setFiles] = useState([]);
@@ -54,7 +53,7 @@ const SubmitVideosPage = () => {
     formData.append('file', fileObj.file);
 
     try {
-      const response = await axios.post('http://localhost:8001/detect/faces/insightface', formData, {
+      const response = await axios.post(getSecondaryApiUrl(API_ENDPOINTS.SECONDARY.ENDPOINTS.INSIGHTFACE_DETECTION), formData, {
         headers: {
           'X-API-Key': API_KEY,
         },

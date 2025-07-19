@@ -41,6 +41,7 @@ import {
 import useFileUpload from '../../hooks/useFileUpload';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import useWebSocketConnection from '../../hooks/useWebSocketConnection';
+import { getPrimaryWebSocketUrl, API_ENDPOINTS } from '../../config/api.js';
 
 const VideoUploader = () => {
     const dispatch = useDispatch();
@@ -101,7 +102,7 @@ const VideoUploader = () => {
         lastMessage,
         connectionError: wsError
     } = useWebSocketConnection({
-        url: `${import.meta.env.VITE_WS_URL || 'ws://localhost:8000'}/ws/video-processing`,
+        url: getPrimaryWebSocketUrl(API_ENDPOINTS.PRIMARY.ENDPOINTS.WEBSOCKET_VIDEO_PROCESSING),
         autoConnect: true,
         reconnectAttempts: 5,
         reconnectInterval: 3000

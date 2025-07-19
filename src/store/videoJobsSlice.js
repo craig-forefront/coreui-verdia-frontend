@@ -1,25 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
-// Fix for process.env not being defined
-let API_BASE = "http://localhost:8000";
-let API_KEY = import.meta.env.REACT_APP_API_KEY || import.meta.env.VITE_API_KEY;
-
-try {
-  // Try using process.env if available (typical CRA setup)
-  if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
-    API_BASE = process.env.REACT_APP_API_URL;
-  } 
-  // Fallback to window._env_ (used in some runtime env config solutions)
-  else if (window._env_ && window._env_.REACT_APP_API_URL) {
-    API_BASE = window._env_.REACT_APP_API_URL;
-  }
-} catch (e) {
-  console.warn("Could not access environment variables, using default API URL");
-}
+import { 
+  PRIMARY_API_BASE_URL, 
+  API_KEY, 
+  API_ENDPOINTS 
+} from '../config/api.js';
 
 export const submitVideos = createAsyncThunk('videoJobs/submitVideos', async (s3Paths) => {
-  const response = await axios.post(`${API_BASE}/submit_videos`, { s3_video_paths: s3Paths }, {
+  const response = await axios.post(`${PRIMARY_API_BASE_URL}${API_ENDPOINTS.PRIMARY.ENDPOINTS.VIDEO_JOBS}`, { s3_video_paths: s3Paths }, {
     headers: {
       'X-API-Key': API_KEY
     }
@@ -28,7 +16,7 @@ export const submitVideos = createAsyncThunk('videoJobs/submitVideos', async (s3
 });
 
 export const fetchJobResults = createAsyncThunk('videoJobs/fetchJobResults', async (videoId) => {
-  const response = await axios.get(`${API_BASE}/job_results/${videoId}`, {
+  const response = await axios.get(`${PRIMARY_API_BASE_URL}/job_results/${videoId}`, {
     headers: {
       'X-API-Key': API_KEY
     }

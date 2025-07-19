@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateJobStatus } from '../store/videoJobsSlice';
+import { getPrimaryWebSocketUrl, API_ENDPOINTS } from '../config/api.js';
 
-const WS_URL = process.env.REACT_APP_WS_URL || "ws://localhost:8000/ws/jobs";
+const WS_URL = getPrimaryWebSocketUrl(API_ENDPOINTS.PRIMARY.ENDPOINTS.WEBSOCKET_JOBS);
 
 const useWebSocket = () => {
   const dispatch = useDispatch();
