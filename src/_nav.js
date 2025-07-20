@@ -6,9 +6,10 @@ import {
   cilVideo,
   cilFace,
   cilHistory,
+  cilSettings,
 } from '@coreui/icons'
 import { LucideIcon } from './components/ui/LucideIcon'
-import { Images, ScanFace } from 'lucide-react'  // Add ScanFace icon for face detection
+import { Images, ScanFace, Activity } from 'lucide-react'
 import { CNavGroup, CNavGroupItems, CNavItem, CNavTitle } from '@coreui/react'
 
 
@@ -35,15 +36,15 @@ const _nav = [
   },
   {
     component: CNavItem,
-    icon: <LucideIcon icon={ScanFace} to="/theme/faces/upload" />,
+    icon: <LucideIcon icon={ScanFace} to="/components/face/upload" />,
     name: 'Detect Faces',
-    to: '/theme/faces/upload',
+    to: '/components/face/upload',
   },
   {
     component: CNavItem,
     icon: <CIcon icon={cilFace} customClassName="nav-icon" />,
     name: 'Manual Embedding',
-    to: '/theme/faces/manual-embedding',
+    to: '/components/face/manual-embedding',
   },
   {
     component: CNavItem,
@@ -67,7 +68,7 @@ const _nav = [
     component: CNavItem,
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
     name: 'Results',
-    to: '/theme/faces',
+    to: '/components/face/results',
   },
   {
     component: CNavTitle,
@@ -76,6 +77,16 @@ const _nav = [
   {
     component: CNavTitle,
     name: 'Collections',
+  },
+  {
+    component: CNavTitle,
+    name: 'System',
+  },
+  {
+    component: CNavItem,
+    icon: <LucideIcon icon={Activity} to="/system/status" />,
+    name: 'System Status',
+    to: '/system/status',
   },
 ]
 

@@ -45,22 +45,21 @@ import {
   selectError,
   selectSuccess,
   selectProcessingStatus
-} from '../../../store/faceProcessingSlice';
+} from '../../store/faceProcessingSlice';
 
 import {
   selectProcessingPreferences
-} from '../../../store/userPreferencesSlice';
+} from '../../store/userPreferencesSlice';
 
 // Custom hooks
-import useFileUpload from '../../../hooks/useFileUpload';
-import useImageLoader from '../../../hooks/useImageLoader';
-import useLocalStorage from '../../../hooks/useLocalStorage';
+import useFileUpload from '../../hooks/useFileUpload';
+import useImageLoader from '../../hooks/useImageLoader';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 // Services
-import faceApiService from '../../../services/faceApiService';
+import faceApiService from '../../services/faceApiService';
 
 // Styles
-import '../../../scss/manual-embedding.css';
 import './manual-embedding.css';
 
 const ManualEmbedding = () => {
@@ -82,6 +81,10 @@ const ManualEmbedding = () => {
   
   // User preferences
   const processingPrefs = useSelector(selectProcessingPreferences);
+  
+  // Local state for drawing (must be before callbacks that use them)
+  const [drawingStart, setDrawingStart] = useState(null);
+  const [currentBbox, setCurrentBbox] = useState(null);
   
   // Local preferences with localStorage
   const [localPrefs, setLocalPrefs] = useLocalStorage('manualEmbeddingPrefs', {
@@ -395,10 +398,6 @@ const ManualEmbedding = () => {
     }
     
   }, [currentImage, detectedFaces, manualBbox, manualKeyPoints, currentBbox, localPrefs.showDetectedFaces, localPrefs.showKeyPoints]);
-
-  // Local state for drawing (temporary, not in Redux)
-  const [drawingStart, setDrawingStart] = useState(null);
-  const [currentBbox, setCurrentBbox] = useState(null);
 
   // Cleanup on unmount
   useEffect(() => {

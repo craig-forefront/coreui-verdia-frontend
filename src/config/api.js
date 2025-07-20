@@ -51,6 +51,8 @@ export const API_ENDPOINTS = {
       FACE_IMAGE_SINGLE: '/api/face-images',
       VIDEO_JOBS: '/submit_videos',
       VIDEO_RESULTS: '/video_results',
+      VECTOR_SEARCH: '/api/vector-search',
+      IMAGE_UPLOAD: '/api/upload',
       HEALTH: '/health',
       WEBSOCKET_JOBS: '/ws/jobs',
       WEBSOCKET_VIDEO_PROCESSING: '/ws/video-processing'
@@ -70,16 +72,28 @@ export const API_ENDPOINTS = {
 
 // Helper functions for building full URLs
 export const buildUrl = (baseUrl, endpoint) => {
+  if (!baseUrl || !endpoint) {
+    console.warn('buildUrl called with missing parameters:', { baseUrl, endpoint });
+    return baseUrl || '';
+  }
   const cleanBase = baseUrl.replace(/\/$/, '');
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   return `${cleanBase}${cleanEndpoint}`;
 };
 
 export const getPrimaryApiUrl = (endpoint) => {
+  if (!endpoint) {
+    console.warn('getPrimaryApiUrl called with undefined endpoint');
+    return API_ENDPOINTS.PRIMARY.BASE_URL;
+  }
   return buildUrl(API_ENDPOINTS.PRIMARY.BASE_URL, endpoint);
 };
 
 export const getSecondaryApiUrl = (endpoint) => {
+  if (!endpoint) {
+    console.warn('getSecondaryApiUrl called with undefined endpoint');
+    return API_ENDPOINTS.SECONDARY.BASE_URL;
+  }
   return buildUrl(API_ENDPOINTS.SECONDARY.BASE_URL, endpoint);
 };
 

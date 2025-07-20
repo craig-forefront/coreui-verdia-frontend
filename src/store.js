@@ -52,15 +52,15 @@ const store = configureStore({
   reducer: {
     vectorSearch: vectorSearchReducer,
     topScores: topScoresReducer,
-    videoJobs: videoJobsReducer, // Add the videoJobsReducer
-    video: videoReducer, // Add the videoReducer for face processing functionality
-    searchHistory: searchHistoryReducer, // Add the searchHistoryReducer
-    ui: uiReducer, // Add UI state management
-    faceProcessing: faceProcessingReducer, // Add face processing state management
-    userPreferences: userPreferencesReducer, // Add user preferences management
-    faceGroups: faceGroupsReducer, // Add face groups search and filtering management
-    imageProcessing: imageProcessingReducer, // Add image processing and upload management
-    webSocket: webSocketReducer, // Add WebSocket connection and real-time communication management
+    videoJobs: videoJobsReducer,
+    video: videoReducer,
+    searchHistory: searchHistoryReducer,
+    ui: uiReducer,
+    faceProcessing: faceProcessingReducer,
+    userPreferences: userPreferencesReducer,
+    faceGroups: faceGroupsReducer,
+    imageProcessing: imageProcessingReducer,
+    webSocket: webSocketReducer,
     app: changeState,
     banner: changeStateBanner,
   },

@@ -4,12 +4,14 @@ import {
   CCard,
   CCardBody,
   CCardTitle,
-  CProgress,
   CButton,
   CListGroup,
   CListGroupItem,
   CCloseButton,
   CSpinner,
+  CRow,
+  CCol,
+  CTooltip,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
 import { Images } from 'lucide-react';
@@ -42,7 +44,6 @@ const FaceSearch = () => {
     formData.append('file', fileObj.file);
 
     try {
-      console.log(`Sending request for ${fileObj.file.name} to API...`);
       const response = await axios.post(getPrimaryApiUrl(API_ENDPOINTS.PRIMARY.ENDPOINTS.FACE_DETECTION), formData, {
         headers: {
           'X-API-Key': API_KEY,
@@ -56,29 +57,21 @@ const FaceSearch = () => {
           });
         },
       });
-      
-      console.log(`API Response for ${fileObj.file.name}:`, {
-        status: response.status,
-        statusText: response.statusText,
-        dataStructure: Object.keys(response.data),
-        hasFaces: response.data.faces ? response.data.faces.length : 'No faces property',
-        hasImageData: !!response.data.imageData,
-      });
-      
+
       setFiles((prev) => {
         const updated = [...prev];
         updated[index].status = 'done';
         updated[index].progress = 100;
         return updated;
       });
-      
+
       // Convert blob URL to data URL for better persistence across navigation
       const dataUrl = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.readAsDataURL(fileObj.file);
       });
-      
+
       // Return the response data with data URL instead of blob URL
       return {
         ...response.data,
@@ -111,28 +104,11 @@ const FaceSearch = () => {
         }
       })
     ).then((results) => {
-      console.log('All uploads and face detections completed');
-      console.log('Raw API results:', results);
-      
       // Filter out null results
       const detectionResults = results.filter((result) => result !== null);
-      console.log('Filtered detectionResults:', detectionResults);
-      console.log('DetectionResults structure:', {
-        type: typeof detectionResults,
-        isArray: Array.isArray(detectionResults),
-        length: detectionResults.length,
-        firstItem: detectionResults.length > 0 ? 
-          {
-            keys: Object.keys(detectionResults[0]),
-            hasFaces: detectionResults[0].faces ? 'yes' : 'no',
-            hasImageData: detectionResults[0].imageData ? 'yes' : 'no',
-            hasPreviewUrl: detectionResults[0].imagePreviewUrl ? 'yes' : 'no',
-          } : 'No items'
-      });
-      
+
       // Fixed navigation path to match routes.js configuration
-      console.log('Navigating to /theme/faces/detections with state:', { state: { detectionResults } });
-      navigate('/theme/faces/detections', { state: { detectionResults } });
+      navigate('/components/face/detections', { state: { detectionResults } });
     });
   };
 
@@ -158,7 +134,9 @@ const FaceSearch = () => {
 
   return (
     <CCard className="text-center p-4">
-      <CCardTitle>Image Upload</CCardTitle>
+      <CCardTitle className="d-flex justify-content-between align-items-center">
+        <span>Image Upload</span>
+      </CCardTitle>
       <CCardBody>
         <div
           {...getRootProps()}
@@ -187,47 +165,70 @@ const FaceSearch = () => {
               Start Upload
             </CButton>
 
-            <CListGroup className="mb-3 text-start">``
-              {files.map((fileObj, index) => (
-                <CListGroupItem
-                  key={index}
-                  className="d-flex align-items-center justify-content-between"
-                >
-                  <div className="d-flex align-items-center">
-                    <img
-                      src={fileObj.preview}
-                      alt="preview"
-                      width={50}
-                      height={50}
-                      className="rounded me-3 object-fit-cover"
-                    />
-                    <div>
-                      <strong>{fileObj.file.name}</strong>
-                      <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-                        {(fileObj.file.size / 1024).toFixed(2)} KB
-                      </div>
-                      <div style={{ width: '200px' }}>
-                        <CProgress
-                          className="mt-1"
-                          value={fileObj.progress}
-                          color={
-                            fileObj.status === 'done'
-                              ? 'success'
-                              : fileObj.status === 'error'
-                                ? 'danger'
-                                : 'primary'
-                          }
+            <CListGroup className="mb-3 text-start">
+              <CRow>
+                {files.map((fileObj, index) => (
+                  <CCol md={6} key={index} className="mb-3">
+                    <CListGroupItem className="d-flex align-items-center justify-content-between">
+                      <div className="d-flex align-items-center flex-grow-1">
+                        <img
+                          src={fileObj.preview}
+                          alt="preview"
+                          width={50}
+                          height={50}
+                          className="rounded me-3 object-fit-cover"
                         />
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <div 
+                            style={{ 
+                              whiteSpace: 'nowrap', 
+                              overflow: 'hidden', 
+                              textOverflow: 'ellipsis',
+                              maxWidth: '180px'
+                            }}
+                          >
+                            {fileObj.file.name.length > 25 ? (
+                              <CTooltip content={fileObj.file.name}>
+                                <strong style={{ cursor: 'help' }}>
+                                  {fileObj.file.name}
+                                </strong>
+                              </CTooltip>
+                            ) : (
+                              <strong>{fileObj.file.name}</strong>
+                            )}
+                          </div>
+                          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
+                            {(fileObj.file.size / 1024).toFixed(2)} KB
+                          </div>
+                          <div className="mt-1">
+                            {fileObj.status === 'uploading' && (
+                              <div className="d-flex align-items-center">
+                                <CSpinner size="sm" className="me-2" />
+                                <small className="text-muted">Processing...</small>
+                              </div>
+                            )}
+                            {fileObj.status === 'done' && (
+                              <div className="d-flex align-items-center">
+                                <span className="text-success me-2">✅</span>
+                                <small className="text-success">Complete</small>
+                              </div>
+                            )}
+                            {fileObj.status === 'error' && (
+                              <div className="d-flex align-items-center">
+                                <span className="text-danger me-2">❌</span>
+                                <small className="text-danger">Error</small>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    {fileObj.status === 'uploading' && <CSpinner size="sm" className="me-2" />}
-                    {fileObj.status === 'done' && <span className="text-success me-2">✔️</span>}
-                    <CCloseButton onClick={() => removeFile(index)} />
-                  </div>
-                </CListGroupItem>
-              ))}
+                      <div className="d-flex align-items-center ms-2">
+                        <CCloseButton onClick={() => removeFile(index)} />
+                      </div>
+                    </CListGroupItem>
+                  </CCol>
+                ))}
+              </CRow>
             </CListGroup>
           </>
         )}

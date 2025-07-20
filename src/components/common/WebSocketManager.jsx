@@ -55,7 +55,7 @@ const WebSocketManager = ({
     enableToasts = true,
     enableMetrics = true,
     enableOfflineMode = true,
-    reconnectAttempts = 5,
+    maxReconnectAttempts = 5,
     heartbeatInterval = 30000,
     messageQueueSize = 100,
     enableDebugMode = false,
@@ -84,7 +84,7 @@ const WebSocketManager = ({
         enableToasts: enableToasts,
         enableAutoReconnect: true,
         reconnectDelay: 5000,
-        maxReconnectAttempts: reconnectAttempts,
+        maxReconnectAttempts: maxReconnectAttempts,
         enableHeartbeat: true,
         heartbeatInterval: heartbeatInterval,
         enableMetrics: enableMetrics,
@@ -265,44 +265,6 @@ const WebSocketManager = ({
         }
     }, [dispatch, messageHandlers, connectionMetrics.messagesReceived, localPrefs.enableDebugLogging]);
 
-    // Connection event handlers
-    const handleOpen = useCallback(() => {
-        console.log('[WebSocketManager] 🔗 WebSocket connection opened');
-        
-        dispatch(updateConnectionStatus({
-            status: 'connected',
-            connectedAt: new Date().toISOString(),
-            reconnectAttempts: 0
-        }));
-        
-        dispatch(clearError());
-    }, [dispatch]);
-
-    const handleClose = useCallback((event) => {
-        console.log(`[WebSocketManager] 🔌 WebSocket connection closed: ${event.code} - ${event.reason}`);
-        
-        dispatch(updateConnectionStatus({
-            status: 'disconnected',
-            disconnectedAt: new Date().toISOString(),
-            lastCloseCode: event.code,
-            lastCloseReason: event.reason
-        }));
-        
-        if (localPrefs.enableNotifications && event.code !== 1000) { // Not a normal closure
-            showNotification('Connection Lost', 'Attempting to reconnect...', 'warning');
-        }
-    }, [dispatch, localPrefs.enableNotifications]);
-
-    const handleError = useCallback((error) => {
-        console.error('[WebSocketManager] 💥 WebSocket error:', error);
-        
-        dispatch(setError({
-            message: 'WebSocket connection error',
-            error: error.message || 'Unknown error',
-            timestamp: new Date().toISOString()
-        }));
-    }, [dispatch]);
-
     // Notification system
     const showNotification = useCallback((title, message, type = 'info') => {
         if (!localPrefs.enableNotifications) return;
@@ -343,6 +305,79 @@ const WebSocketManager = ({
         }
     };
 
+    // Enhanced WebSocket connection with all features - called early to get the values
+    const { 
+        isConnected, 
+        send, 
+        disconnect, 
+        reconnect,
+        forceReconnect,
+        connectionState,
+        reconnectAttempts: currentReconnectAttempts,
+        maxReconnectAttempts: maxAttempts,
+        isCircuitBreakerOpen,
+        canReconnect
+    } = useWebSocketConnection({
+        url: WS_URL,
+        onMessage: handleMessage,
+        onOpen: useCallback(() => {
+            console.log('[WebSocketManager] 🔗 WebSocket connection opened');
+            
+            dispatch(updateConnectionStatus({
+                status: 'connected',
+                connectedAt: new Date().toISOString(),
+                reconnectAttempts: 0,
+                isCircuitBreakerOpen: false
+            }));
+            
+            dispatch(clearError());
+        }, [dispatch]),
+        onClose: useCallback((event) => {
+            console.log(`[WebSocketManager] 🔌 WebSocket connection closed: ${event.code} - ${event.reason}`);
+            
+            dispatch(updateConnectionStatus({
+                status: 'disconnected',
+                disconnectedAt: new Date().toISOString(),
+                lastCloseCode: event.code,
+                lastCloseReason: event.reason
+            }));
+        }, [dispatch]),
+        onError: useCallback((error) => {
+            console.error('[WebSocketManager] 💥 WebSocket error:', error);
+            
+            dispatch(setError({
+                message: 'WebSocket connection error',
+                error: error.message || 'Unknown error',
+                timestamp: new Date().toISOString()
+            }));
+        }, [dispatch]),
+        reconnectDelay: localPrefs.reconnectDelay,
+        maxReconnectAttempts: localPrefs.maxReconnectAttempts,
+        pingInterval: localPrefs.enableHeartbeat ? localPrefs.heartbeatInterval : 0,
+        enabled: networkOnline && localPrefs.enableAutoReconnect
+    });
+
+    // Connection event handlers that depend on the hook values
+    useEffect(() => {
+        // Show success notification if this was a reconnection
+        if (isConnected && currentReconnectAttempts > 0) {
+            showNotification('Connection Restored', 'WebSocket connection re-established', 'success');
+        }
+    }, [isConnected, currentReconnectAttempts, showNotification]);
+
+    useEffect(() => {
+        // Show notifications based on connection state changes
+        if (!isConnected && localPrefs.enableNotifications) {
+            if (isCircuitBreakerOpen) {
+                showNotification('Connection Failed', 'Too many failed attempts. Please check server status and try again later.', 'danger');
+            } else if (currentReconnectAttempts >= maxAttempts) {
+                showNotification('Connection Lost', 'Maximum reconnection attempts reached. Please refresh the page.', 'danger');
+            } else if (canReconnect && currentReconnectAttempts > 0) {
+                showNotification('Connection Lost', `Attempting to reconnect... (${currentReconnectAttempts}/${maxAttempts})`, 'warning');
+            }
+        }
+    }, [isConnected, isCircuitBreakerOpen, currentReconnectAttempts, maxAttempts, canReconnect, localPrefs.enableNotifications, showNotification]);
+
     // Message queue processing for offline mode
     const processQueuedMessages = useCallback(() => {
         if (messageQueueRef.current.length > 0 && connectionStatus.status === 'connected') {
@@ -354,25 +389,7 @@ const WebSocketManager = ({
             
             messageQueueRef.current = [];
         }
-    }, [connectionStatus.status]);
-
-    // Enhanced WebSocket connection with all features
-    const { 
-        isConnected, 
-        send, 
-        disconnect, 
-        reconnect,
-        connectionState 
-    } = useWebSocketConnection({
-        url: WS_URL,
-        onMessage: handleMessage,
-        onOpen: handleOpen,
-        onClose: handleClose,
-        onError: handleError,
-        reconnectDelay: localPrefs.reconnectDelay,
-        pingInterval: localPrefs.enableHeartbeat ? localPrefs.heartbeatInterval : 0,
-        enabled: networkOnline && localPrefs.enableAutoReconnect
-    });
+    }, [connectionStatus.status, send]);
 
     // Enhanced send function with queuing
     const sendMessage = useCallback((message) => {
@@ -454,13 +471,19 @@ const WebSocketManager = ({
                     <CBadge color="secondary">
                         Queue: {messageQueueRef.current.length}
                     </CBadge>
+                    <CBadge color="warning">
+                        Attempts: {currentReconnectAttempts}/{maxAttempts}
+                    </CBadge>
+                    {isCircuitBreakerOpen && (
+                        <CBadge color="danger">Circuit Breaker Open</CBadge>
+                    )}
                     {isSlowConnection && (
                         <CBadge color="warning">Slow Connection</CBadge>
                     )}
                 </div>
                 <div className="d-flex gap-2">
-                    <CButton size="sm" color="outline-primary" onClick={reconnect}>
-                        Reconnect
+                    <CButton size="sm" color="outline-primary" onClick={forceReconnect}>
+                        Force Reconnect
                     </CButton>
                     <CButton size="sm" color="outline-secondary" onClick={() => dispatch(clearMessages())}>
                         Clear History
@@ -478,12 +501,23 @@ const WebSocketManager = ({
                 send: sendMessage,
                 disconnect,
                 reconnect,
-                getStatus: () => connectionStatus,
+                forceReconnect,
+                getStatus: () => ({
+                    ...connectionStatus,
+                    reconnectAttempts: currentReconnectAttempts,
+                    maxReconnectAttempts: maxAttempts,
+                    isCircuitBreakerOpen,
+                    canReconnect
+                }),
                 getMetrics: () => connectionMetrics,
-                clearQueue: () => { messageQueueRef.current = []; }
+                clearQueue: () => { messageQueueRef.current = []; },
+                resetConnection: () => {
+                    disconnect();
+                    setTimeout(forceReconnect, 1000);
+                }
             };
         }
-    }, [sendMessage, disconnect, reconnect, connectionStatus, connectionMetrics, localPrefs.enableDebugLogging]);
+    }, [sendMessage, disconnect, reconnect, forceReconnect, connectionStatus, connectionMetrics, localPrefs.enableDebugLogging, currentReconnectAttempts, maxAttempts, isCircuitBreakerOpen, canReconnect]);
 
     return (
         <>
@@ -495,11 +529,50 @@ const WebSocketManager = ({
                 <CToaster ref={toasterRef} placement="top-end" />
             )}
             
-            {/* Connection Status Indicator for users */}
+            {/* Enhanced Connection Status Indicator */}
             {!isConnected && (
-                <CAlert color="warning" className="d-flex align-items-center">
-                    <CIcon icon={cilWifiSignal0} className="me-2" />
-                    <span>Real-time updates are temporarily unavailable. Reconnecting...</span>
+                <CAlert 
+                    color={isCircuitBreakerOpen ? 'danger' : (canReconnect ? 'warning' : 'danger')} 
+                    className="d-flex align-items-center justify-content-between"
+                >
+                    <div className="d-flex align-items-center">
+                        <CIcon icon={cilWifiSignal0} className="me-2" />
+                        <div>
+                            {isCircuitBreakerOpen ? (
+                                <>
+                                    <strong>Connection Blocked</strong>
+                                    <div className="small">Too many failed attempts. Server may be unavailable.</div>
+                                </>
+                            ) : currentReconnectAttempts >= maxAttempts ? (
+                                <>
+                                    <strong>Connection Failed</strong>
+                                    <div className="small">Maximum reconnection attempts reached ({currentReconnectAttempts}/{maxAttempts})</div>
+                                </>
+                            ) : canReconnect ? (
+                                <>
+                                    <strong>Reconnecting...</strong>
+                                    <div className="small">Attempt {currentReconnectAttempts + 1} of {maxAttempts}</div>
+                                </>
+                            ) : (
+                                <>
+                                    <strong>Connection Lost</strong>
+                                    <div className="small">Real-time updates are unavailable</div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Manual reconnection button when automatic reconnection is exhausted */}
+                    {(currentReconnectAttempts >= maxAttempts || isCircuitBreakerOpen) && (
+                        <CButton 
+                            size="sm" 
+                            color="primary" 
+                            variant="outline"
+                            onClick={forceReconnect}
+                        >
+                            Retry Connection
+                        </CButton>
+                    )}
                 </CAlert>
             )}
         </>

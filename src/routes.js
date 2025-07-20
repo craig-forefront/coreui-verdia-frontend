@@ -2,11 +2,12 @@ import React from 'react'
 
 // Views
 const FaceSearch = React.lazy(() => import('./views/search/FaceSearch'))
-const Detections = React.lazy(() => import('./views/theme/faces/Detections'))
-const ImageUploader = React.lazy(() => import('./views/theme/faces/ImageUploader'))
-const ManualEmbedding = React.lazy(() => import('./views/theme/faces/ManualEmbedding'))
+const Detections = React.lazy(() => import('./components/face/Detections'))
+const ImageUploader = React.lazy(() => import('./components/face/ImageUploader'))
+const ManualEmbedding = React.lazy(() => import('./components/face/ManualEmbedding'))
 const TopScoresView = React.lazy(() => import('./views/scores/TopScoresView'))
 const SearchHistoryView = React.lazy(() => import('./views/history/SearchHistoryView'))
+const SystemStatus = React.lazy(() => import('./views/system/SystemStatus'))
 const VideoUploader = React.lazy(() => import('./components/video/VideoUploader'))
 const FaceGroupings = React.lazy(() => import('./views/video/FaceGroupings'))
 
@@ -30,12 +31,13 @@ const routes = [
   { path: '/videos/list', name: 'My Videos', element: MainVideoPage },
   { path: '/videos/faces', name: 'Face Groups', element: MainVideoPage },
   
-  { path: '/theme/faces', name: 'Faces', exact: true, element: React.lazy(() => import('./views/theme/faces/faces')) },
-  { path: '/theme/faces/upload', name: 'Upload Face Image', element: ImageUploader },
-  { path: '/theme/faces/detections', name: 'Face Detections', element: Detections },
-  { path: '/theme/faces/manual-embedding', name: 'Manual Face Embedding', element: ManualEmbedding },
+  { path: '/components/face', name: 'Faces', exact: true, element: React.lazy(() => import('./components/face/Faces')) },
+  { path: '/components/face/upload', name: 'Upload Face Image', element: ImageUploader },
+  { path: '/components/face/detections', name: 'Face Detections', element: Detections },
+  { path: '/components/face/manual-embedding', name: 'Manual Face Embedding', element: ManualEmbedding },
   { path: '/scores/top-scores', name: 'Top Score Matches', element: TopScoresView },
-  { path: '/history/search', name: 'Search History', element: SearchHistoryView }
+  { path: '/history/search', name: 'Search History', element: SearchHistoryView },
+  { path: '/system/status', name: 'System Status', element: SystemStatus }
 ]
 
 export default routes

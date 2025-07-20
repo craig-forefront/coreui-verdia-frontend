@@ -12,7 +12,6 @@ const DefaultLayout = () => {
         </div>
         <AppFooter />
       </div>
-      {/* WebSocket manager placed outside UI components so it persists across route changes */}
       <WebSocketManager />
     </div>
   )

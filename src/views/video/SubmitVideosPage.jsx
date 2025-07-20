@@ -115,7 +115,7 @@ const SubmitVideosPage = () => {
       console.log('All uploads and face detections completed');
       // Build detectionResults from the returned results
       const detectionResults = results.filter((result) => result !== null);
-      navigate('/theme/detections', { state: { detectionResults } });
+      navigate('/components/face/detections', { state: { detectionResults } });
     });
   };
 

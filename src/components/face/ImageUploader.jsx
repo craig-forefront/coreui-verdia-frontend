@@ -40,12 +40,12 @@ import {
     selectImageUploadError,
     selectDetectionResults,
     selectImageUploadPreferences
-} from '../../../store/imageProcessingSlice';
+} from '../../store/imageProcessingSlice';
 
 // Custom hooks
-import useFileUpload from '../../../hooks/useFileUpload';
-import useImageLoader from '../../../hooks/useImageLoader';
-import useLocalStorage from '../../../hooks/useLocalStorage';
+import useFileUpload from '../../hooks/useFileUpload';
+import useImageLoader from '../../hooks/useImageLoader';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 const ImageUploader = ({
     // Configuration props for reusability
@@ -113,7 +113,7 @@ const ImageUploader = ({
             dispatch(setUploadError(`Failed to process image: ${error.message}`));
         },
         onRetry: (attempt) => {
-            console.log(`Image upload retry attempt ${attempt}/${localPrefs.maxRetries}`);
+            // Retry attempt handled silently
         }
     });
 
@@ -160,7 +160,6 @@ const ImageUploader = ({
                             lastModified: Date.now(),
                         });
                         
-                        console.log(`Image optimized from ${img.width}x${img.height} to ${width}x${height}`);
                         resolve(optimizedFile);
                     } else {
                         reject(new Error('Failed to optimize image'));
@@ -313,7 +312,7 @@ const ImageUploader = ({
                 
                 // Auto-navigate if enabled
                 if (localPrefs.autoNavigateOnSuccess && mode === 'face-detection') {
-                    navigate('/theme/faces/detections', { 
+                    navigate('/components/face/detections', {
                         state: { detectionResults: results }
                     });
                 }
