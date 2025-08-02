@@ -5,15 +5,37 @@
 }
 
 .custom-range-slider .range-slider__range {
-  background-color: #3399ff; /* CoreUI primary color */
+  background-color: var(--cui-primary, #321fdb); /* CoreUI primary color */
 }
 
 .custom-range-slider .range-slider__thumb {
   width: 16px;
   height: 16px;
-  background-color: #fff;
-  border: 2px solid #3399ff;
+  background-color: var(--cui-primary, #321fdb);
+  border: 2px solid var(--cui-primary, #321fdb);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.custom-range-slider .range-slider__thumb:hover {
+  background-color: var(--cui-primary-dark, #2a1b9b);
+  border-color: var(--cui-primary-dark, #2a1b9b);
+}
+
+.custom-range-slider .range-slider__thumb:active {
+  background-color: var(--cui-primary-darker, #1f1471);
+  border-color: var(--cui-primary-darker, #1f1471);
+}
+
+.custom-range-slider .range-slider__track {
+  background-color: var(--cui-border-color, #d8dbe0);
+  height: 5px;
+  border-radius: 3px;
+}
+
+.custom-range-slider .range-slider__range {
+  background-color: var(--cui-primary, #321fdb);
+  border-radius: 3px;
+  height: 5px;
 }
 
 /* Hover state for the face detection boxes */

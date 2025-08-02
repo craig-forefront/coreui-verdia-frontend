@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CRow, CCol, CButton, CFormCheck, CFormLabel, CBadge, CTooltip } from '@coreui/react';
+import { CRow, CCol, CButton, CFormCheck, CFormLabel, CBadge, CTooltip, CContainer } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilPencil } from '@coreui/icons';
 import RangeSlider from 'react-range-slider-input';
@@ -200,6 +200,7 @@ const Detections = () => {
   );
   const [selectedBoxes, setSelectedBoxes] = useState(initialSelectedBoxes);
   const [largestOnly, setLargestOnly] = useState(false);
+  const [selectAllFaces, setSelectAllFaces] = useState(false);
 
   // Change ageRange state type to array for react-range-slider-input
   const [ageRange, setAgeRange] = useState([18, 100]);
@@ -452,11 +453,46 @@ const Detections = () => {
   const toggleBox = (imageIndex, boxId) => {
     const key = `${imageIndex}-${boxId}`;
     setSelectedBoxes((prevSelected) => {
+      let newSelected;
       if (prevSelected.includes(key)) {
-        return prevSelected.filter((item) => item !== key);
+        newSelected = prevSelected.filter((item) => item !== key);
       } else {
-        return [...prevSelected, key];
+        // Check if "largest only" is enabled and we're selecting a face
+        if (largestOnly) {
+          // Find the largest face in this image
+          const imgData = filteredBoxes[imageIndex];
+          if (imgData && imgData.boundingBoxes && imgData.boundingBoxes.length > 0) {
+            const largestBox = imgData.boundingBoxes.reduce((maxBox, box) => {
+              if (!maxBox) return box;
+              return (box.width * box.height) > (maxBox.width * maxBox.height) ? box : maxBox;
+            }, null);
+
+            const largestBoxKey = largestBox ? `${imageIndex}-${largestBox.id}` : null;
+            
+            // If we're selecting a different face than the largest, disable "largest only"
+            if (largestBoxKey && key !== largestBoxKey) {
+              setLargestOnly(false);
+              // Keep the largest face selected and add the clicked face
+              newSelected = [...prevSelected, key];
+            } else {
+              newSelected = [...prevSelected, key];
+            }
+          } else {
+            newSelected = [...prevSelected, key];
+          }
+        } else {
+          newSelected = [...prevSelected, key];
+        }
       }
+      
+      // Update selectAllFaces state based on whether all visible faces are selected
+      const allVisibleFaces = filteredBoxes.flatMap((imgData, imgIndex) =>
+        imgData.boundingBoxes.map((box) => `${imgIndex}-${box.id}`)
+      );
+      const allSelected = allVisibleFaces.length > 0 && allVisibleFaces.every(faceKey => newSelected.includes(faceKey));
+      setSelectAllFaces(allSelected);
+      
+      return newSelected;
     });
   };
 
@@ -467,12 +503,14 @@ const Detections = () => {
       // Use modified detections if available, otherwise use original
       const currentBoundingBoxes = modifiedDetections[imgIndex] || imgData.boundingBoxes;
 
-      // Filter boxes based on current criteria
-      const filteredBoundingBoxes = currentBoundingBoxes.filter((box) => {
+      // Separate boxes into filtered and unfiltered
+      const { filteredBoundingBoxes, unfilteredBoundingBoxes } = currentBoundingBoxes.reduce((acc, box) => {
+        let isFiltered = true;
+
         // Age filter - if box has age data
         if (box.estimatedAge !== null && box.estimatedAge !== undefined) {
           if (box.estimatedAge < ageRange[0] || box.estimatedAge > ageRange[1]) {
-            return false;
+            isFiltered = false;
           }
         }
 
@@ -480,16 +518,23 @@ const Detections = () => {
         if (box.confidence !== null && box.confidence !== undefined) {
           const confidencePercent = box.confidence * 100;
           if (confidencePercent < detectionScore[0] || confidencePercent > detectionScore[1]) {
-            return false;
+            isFiltered = false;
           }
         }
 
-        return true;
-      });
+        if (isFiltered) {
+          acc.filteredBoundingBoxes.push(box);
+        } else {
+          acc.unfilteredBoundingBoxes.push(box);
+        }
+
+        return acc;
+      }, { filteredBoundingBoxes: [], unfilteredBoundingBoxes: [] });
 
       return {
         ...imgData,
         boundingBoxes: filteredBoundingBoxes,
+        unfilteredBoundingBoxes: unfilteredBoundingBoxes,
       };
     });
   }, [imagesData, ageRange, detectionScore, modifiedDetections]);
@@ -513,10 +558,48 @@ const Detections = () => {
     };
   }, [imagesData, filteredBoxes, selectedBoxes, modifiedDetections]);
 
+  // Effect to handle "Select All Faces" functionality
+  // Automatically select all visible faces when filters change and selectAllFaces is checked
+  useEffect(() => {
+    if (selectAllFaces) {
+      const allVisibleFaces = filteredBoxes.flatMap((imgData, imgIndex) =>
+        imgData.boundingBoxes.map((box) => `${imgIndex}-${box.id}`)
+      );
+      setSelectedBoxes(allVisibleFaces);
+    }
+  }, [filteredBoxes, selectAllFaces]);
+
+  // Effect to automatically deselect faces that become filtered out
+  useEffect(() => {
+    const allVisibleFaces = filteredBoxes.flatMap((imgData, imgIndex) =>
+      imgData.boundingBoxes.map((box) => `${imgIndex}-${box.id}`)
+    );
+
+    setSelectedBoxes((prevSelected) => {
+      // Keep only selected faces that are still visible (not filtered out)
+      const stillVisibleSelected = prevSelected.filter(selectedKey => 
+        allVisibleFaces.includes(selectedKey)
+      );
+      
+      // Only update if there's actually a change
+      if (stillVisibleSelected.length !== prevSelected.length) {
+        // Update selectAllFaces checkbox state based on new selection
+        const allSelected = allVisibleFaces.length > 0 && allVisibleFaces.every(faceKey => stillVisibleSelected.includes(faceKey));
+        setSelectAllFaces(allSelected);
+        
+        return stillVisibleSelected;
+      }
+      
+      return prevSelected;
+    });
+  }, [filteredBoxes]);
+
   const handleLargestOnlyChange = (e) => {
     const checked = e.target.checked;
     setLargestOnly(checked);
     if (checked) {
+      // Disable select all faces when largest only is selected
+      setSelectAllFaces(false);
       const newSelections = imagesData.map((imgData, imgIndex) => {
         if (!imgData.boundingBoxes || imgData.boundingBoxes.length === 0) {
           return null;
@@ -531,6 +614,23 @@ const Detections = () => {
       setSelectedBoxes(newSelections);
     } else {
       setSelectedBoxes(initialSelectedBoxes);
+    }
+  };
+
+  const handleSelectAllFacesChange = (e) => {
+    const checked = e.target.checked;
+    setSelectAllFaces(checked);
+    if (checked) {
+      // Disable largest only when select all faces is selected
+      setLargestOnly(false);
+      // Select all visible faces after filtering
+      const allVisibleFaces = filteredBoxes.flatMap((imgData, imgIndex) =>
+        imgData.boundingBoxes.map((box) => `${imgIndex}-${box.id}`)
+      );
+      setSelectedBoxes(allVisibleFaces);
+    } else {
+      // Deselect all faces
+      setSelectedBoxes([]);
     }
   };
 
@@ -602,18 +702,32 @@ const Detections = () => {
 
   // Get current detections for an image (modified or original)
   const getCurrentDetections = (imgIndex) => {
-    return modifiedDetections[imgIndex] || filteredBoxes[imgIndex]?.boundingBoxes || [];
+    const imgData = filteredBoxes[imgIndex];
+    if (!imgData) return [];
+    
+    // Return both filtered and unfiltered boxes
+    return [...(imgData.boundingBoxes || []), ...(imgData.unfilteredBoundingBoxes || [])];
+  };
+
+  // Helper function to check if a box is filtered out
+  const isBoxFiltered = (imgIndex, box) => {
+    const imgData = filteredBoxes[imgIndex];
+    if (!imgData) return false;
+    
+    // Check if the box is in the unfiltered list
+    return imgData.unfilteredBoundingBoxes?.some(unfilteredBox => unfilteredBox.id === box.id) || false;
   };
 
   return (
     <>
-      <CRow className="my-4">
-        {/* First column for images */}
-        <CCol md="4">
-          {filteredBoxes
-            .filter((_, imgIndex) => imgIndex % 2 === 0) // Even indexed images (0, 2, 4...)
-            .map((imgData, relativeIndex) => {
-              const imgIndex = relativeIndex * 2; // Convert back to original index
+      <CContainer fluid>
+        <CRow className="my-2">
+          {/* First column for images */}
+          <CCol md="5">
+            {filteredBoxes
+              .filter((_, imgIndex) => imgIndex % 2 === 0) // Even indexed images (0, 2, 4...)
+              .map((imgData, relativeIndex) => {
+                const imgIndex = relativeIndex * 2; // Convert back to original index
               return (
                 <div
                   key={imgIndex}
@@ -645,6 +759,7 @@ const Detections = () => {
                   {getCurrentDetections(imgIndex).map((box) => {
                     const key = `${imgIndex}-${box.id}`;
                     const isSelected = selectedBoxes.includes(key);
+                    const isFiltered = isBoxFiltered(imgIndex, box);
                     const scale = scales[imgIndex];
                     if (!scale) return null; // Don't render box if scale isn't ready
                     const adjustedBox = getAdjustedBox(box, scale, imgData);
@@ -654,37 +769,43 @@ const Detections = () => {
                       <React.Fragment key={key}>
                         {/* Main bounding box */}
                         <div
-                          onClick={() => toggleBox(imgIndex, box.id)}
+                          onClick={() => !isFiltered && toggleBox(imgIndex, box.id)}
                           style={{
                             position: 'absolute',
                             top: adjustedBox.y,
                             left: adjustedBox.x,
                             width: adjustedBox.width,
                             height: adjustedBox.height,
-                            border: isSelected ? '2px solid #32CD32' : '2px dotted #32CD32',
-                            cursor: 'pointer',
+                            border: isFiltered 
+                              ? '4px dotted #ff0000' 
+                              : isSelected 
+                                ? '2px solid #32CD32' 
+                                : '2px dotted #32CD32',
+                            cursor: isFiltered ? 'default' : 'pointer',
                             boxSizing: 'border-box',
                           }}
                         >
-                          <div style={faceBadgeStyle}>
-                            {box.estimatedAge && (
-                              <CTooltip content="Estimated Age">
-                                <CBadge color="info">Age: {box.estimatedAge}</CBadge>
-                              </CTooltip>
-                            )}
-                            {box.estimatedGender !== null && box.estimatedGender !== undefined && (
-                              <CTooltip content="Gender">
-                                <CBadge color="secondary">{GENDER_LABELS[box.estimatedGender]}</CBadge>
-                              </CTooltip>
-                            )}
-                            {box.confidence && (
-                              <CTooltip content="Confidence Score">
-                                <CBadge color={box.confidence > 0.85 ? "success" : "warning"}>
-                                  {formatConfidence(box.confidence)}
-                                </CBadge>
-                              </CTooltip>
-                            )}
-                          </div>
+                          {!isFiltered && (
+                            <div style={faceBadgeStyle}>
+                              {box.estimatedAge && (
+                                <CTooltip content="Estimated Age">
+                                  <CBadge color="info">Age: {box.estimatedAge}</CBadge>
+                                </CTooltip>
+                              )}
+                              {box.estimatedGender !== null && box.estimatedGender !== undefined && (
+                                <CTooltip content="Gender">
+                                  <CBadge color="secondary">{GENDER_LABELS[box.estimatedGender]}</CBadge>
+                                </CTooltip>
+                              )}
+                              {box.confidence && (
+                                <CTooltip content="Confidence Score">
+                                  <CBadge color={box.confidence > 0.85 ? "success" : "warning"}>
+                                    {formatConfidence(box.confidence)}
+                                  </CBadge>
+                                </CTooltip>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </React.Fragment>
                     );
@@ -703,7 +824,25 @@ const Detections = () => {
                     fontWeight: 'bold',
                     zIndex: 101
                   }}>
-                    {getCurrentDetections(imgIndex).length} face{getCurrentDetections(imgIndex).length !== 1 ? 's' : ''}
+                    {(() => {
+                      const allFaces = getCurrentDetections(imgIndex);
+                      const visibleFaces = allFaces.filter(box => !isBoxFiltered(imgIndex, box));
+                      const selectedFaces = visibleFaces.filter(box => 
+                        selectedBoxes.includes(`${imgIndex}-${box.id}`)
+                      ).length;
+                      const filteredOutCount = allFaces.length - visibleFaces.length;
+                      
+                      return (
+                        <div>
+                          <div>{`${selectedFaces} of ${visibleFaces.length} face${visibleFaces.length !== 1 ? 's' : ''} selected`}</div>
+                          {filteredOutCount > 0 && (
+                            <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>
+                              {`${filteredOutCount} filtered out`}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Edit button */}
@@ -725,7 +864,7 @@ const Detections = () => {
                         }}
                       >
                         <CIcon icon={cilPencil} className="me-1" size="sm" />
-                        Edit
+                        Add
                       </CButton>
                     </CTooltip>
                   </div>
@@ -735,7 +874,7 @@ const Detections = () => {
         </CCol>
 
         {/* Second column for images */}
-        <CCol md="4">
+        <CCol md="5">
           {filteredBoxes
             .filter((_, imgIndex) => imgIndex % 2 === 1) // Odd indexed images (1, 3, 5...)
             .map((imgData, relativeIndex) => {
@@ -771,6 +910,7 @@ const Detections = () => {
                   {getCurrentDetections(imgIndex).map((box) => {
                     const key = `${imgIndex}-${box.id}`;
                     const isSelected = selectedBoxes.includes(key);
+                    const isFiltered = isBoxFiltered(imgIndex, box);
                     const scale = scales[imgIndex];
                     if (!scale) return null; // Don't render box if scale isn't ready
                     const adjustedBox = getAdjustedBox(box, scale, imgData);
@@ -780,37 +920,43 @@ const Detections = () => {
                       <React.Fragment key={key}>
                         {/* Main bounding box */}
                         <div
-                          onClick={() => toggleBox(imgIndex, box.id)}
+                          onClick={() => !isFiltered && toggleBox(imgIndex, box.id)}
                           style={{
                             position: 'absolute',
                             top: adjustedBox.y,
                             left: adjustedBox.x,
                             width: adjustedBox.width,
                             height: adjustedBox.height,
-                            border: isSelected ? '2px solid #32CD32' : '2px dotted #32CD32',
-                            cursor: 'pointer',
+                            border: isFiltered 
+                              ? '4px dotted #ff0000' 
+                              : isSelected 
+                                ? '2px solid #32CD32' 
+                                : '2px dotted #32CD32',
+                            cursor: isFiltered ? 'default' : 'pointer',
                             boxSizing: 'border-box',
                           }}
                         >
-                          <div style={faceBadgeStyle}>
-                            {box.estimatedAge && (
-                              <CTooltip content="Estimated Age">
-                                <CBadge color="info">Age: {box.estimatedAge}</CBadge>
-                              </CTooltip>
-                            )}
-                            {box.estimatedGender !== null && box.estimatedGender !== undefined && (
-                              <CTooltip content="Gender">
-                                <CBadge color="secondary">{GENDER_LABELS[box.estimatedGender]}</CBadge>
-                              </CTooltip>
-                            )}
-                            {box.confidence && (
-                              <CTooltip content="Confidence Score">
-                                <CBadge color={box.confidence > 0.85 ? "success" : "warning"}>
-                                  {formatConfidence(box.confidence)}
-                                </CBadge>
-                              </CTooltip>
-                            )}
-                          </div>
+                          {!isFiltered && (
+                            <div style={faceBadgeStyle}>
+                              {box.estimatedAge && (
+                                <CTooltip content="Estimated Age">
+                                  <CBadge color="info">Age: {box.estimatedAge}</CBadge>
+                                </CTooltip>
+                              )}
+                              {box.estimatedGender !== null && box.estimatedGender !== undefined && (
+                                <CTooltip content="Gender">
+                                  <CBadge color="secondary">{GENDER_LABELS[box.estimatedGender]}</CBadge>
+                                </CTooltip>
+                              )}
+                              {box.confidence && (
+                                <CTooltip content="Confidence Score">
+                                  <CBadge color={box.confidence > 0.85 ? "success" : "warning"}>
+                                    {formatConfidence(box.confidence)}
+                                  </CBadge>
+                                </CTooltip>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </React.Fragment>
                     );
@@ -829,7 +975,25 @@ const Detections = () => {
                     fontWeight: 'bold',
                     zIndex: 101
                   }}>
-                    {getCurrentDetections(imgIndex).length} face{getCurrentDetections(imgIndex).length !== 1 ? 's' : ''}
+                    {(() => {
+                      const allFaces = getCurrentDetections(imgIndex);
+                      const visibleFaces = allFaces.filter(box => !isBoxFiltered(imgIndex, box));
+                      const selectedFaces = visibleFaces.filter(box => 
+                        selectedBoxes.includes(`${imgIndex}-${box.id}`)
+                      ).length;
+                      const filteredOutCount = allFaces.length - visibleFaces.length;
+                      
+                      return (
+                        <div>
+                          <div>{`${selectedFaces} of ${visibleFaces.length} face${visibleFaces.length !== 1 ? 's' : ''} selected`}</div>
+                          {filteredOutCount > 0 && (
+                            <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>
+                              {`${filteredOutCount} filtered out`}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Edit button */}
@@ -851,7 +1015,7 @@ const Detections = () => {
                         }}
                       >
                         <CIcon icon={cilPencil} className="me-1" size="sm" />
-                        Edit
+                        Add
                       </CButton>
                     </CTooltip>
                   </div>
@@ -861,21 +1025,28 @@ const Detections = () => {
         </CCol>
 
         {/* Third column for filters - sticky */}
-        <CCol md="4">
+        <CCol md="2">
           <div style={{ position: 'sticky', top: '145px', height: 'fit-content' }}>
             {/* Counts section */}
             <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid var(--cui-border-color)', borderRadius: '4px', backgroundColor: 'var(--cui-card-bg)', color: 'var(--cui-body-color)' }}>
-              <h6 style={{ marginBottom: '10px', color: 'var(--cui-body-color)' }}>Face Detection Summary</h6>
+              <h5 style={{ marginBottom: '10px', color: 'var(--cui-body-color)' }}>Summary Counts</h5>
               <div style={{ fontSize: '0.9rem', lineHeight: '1.5', color: 'var(--cui-body-color)' }}>
                 <div><strong>Images:</strong> {counts.totalImages}</div>
-                <div><strong>Faces Detected:</strong> {counts.totalFacesDetected}</div>
-                <div><strong>Faces After Filter:</strong> {counts.facesAfterFilter}</div>
-                <div><strong>Faces Selected:</strong> {counts.selectedFacesCount}</div>
+                <div><strong>Detected:</strong> {counts.totalFacesDetected}</div>
+                <div><strong>Filtered:</strong> {counts.facesAfterFilter}</div>
+                <div><strong>Selected:</strong> {counts.selectedFacesCount}</div>
               </div>
             </div>
 
             <div style={{ marginBottom: '10px', padding: '20px', border: '1px solid var(--cui-border-color)', borderRadius: '4px', backgroundColor: 'var(--cui-card-bg)', color: 'var(--cui-body-color)' }}>
               <h5>Filters</h5>
+              <CFormCheck
+                id="select-all-faces"
+                label="Select all faces"
+                checked={selectAllFaces}
+                onChange={handleSelectAllFacesChange}
+                style={checkboxStyle}
+              />
               <CFormCheck
                 id="largest-only"
                 label="Largest face only"
@@ -940,6 +1111,7 @@ const Detections = () => {
           </div>
         </CCol>
       </CRow>
+      </CContainer>
 
       {/* Manual Embedding Modal */}
       <ManualEmbeddingModal

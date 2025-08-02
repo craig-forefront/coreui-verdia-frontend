@@ -36,59 +36,6 @@
   pointer-events: none;
 }
 
-/* Face detection visualization */
-.face-bbox {
-  position: absolute;
-  border: 24px solid #32cd32;
-  pointer-events: none;
-  background: rgba(50, 205, 50, 0.1);
-}
-
-.face-bbox.manual {
-  border-color: #32cd32;
-  border-style: dashed;
-  border-width: 24px;
-  background: rgba(50, 205, 50, 0.1);
-}
-
-.face-bbox.drawing {
-  border-color: #007bff;
-  border-style: dashed;
-  border-width: 24px;
-  background: rgba(0, 123, 255, 0.1);
-}
-
-.face-label {
-  position: absolute;
-  top: -25px;
-  left: 0;
-  background: rgba(50, 205, 50, 0.9);
-  color: white;
-  padding: 2px 6px;
-  font-size: 12px;
-  border-radius: 3px;
-}
-
-.face-label.manual {
-  background: rgba(50, 205, 50, 0.9);
-}
-
-.face-label.drawing {
-  background: rgba(0, 123, 255, 0.8);
-}
-
-/* Key points visualization */
-.keypoint {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #ffc107;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-}
-
 /* Results section */
 .embedding-result {
   transition: all 0.3s ease;
@@ -121,6 +68,40 @@
   max-width: 300px;
 }
 
+/* Cursor label for keypoint marking */
+.cursor-label {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  margin-top: -5px;
+}
+
+/* Responsive cursor label sizing */
+@media (max-width: 768px) {
+  .cursor-label {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
+/* Small image optimizations */
+.image-container.small-image {
+  min-height: 200px;
+}
+
+.image-container.small-image .cursor-label {
+  font-size: 10px;
+  padding: 1px 4px;
+}
+
 /* Animation for loading states */
 @keyframes pulse {
   0% {
@@ -143,8 +124,9 @@
   margin-right: 1rem;
 }
 
-/* Code display for probe IDs */
-code {
+/* Code display for probe IDs - made more specific */
+.embedding-result code,
+.some-other-specific-container code {
   font-size: 0.875em;
   color: #e83e8c;
   background-color: #f8f9fa;
